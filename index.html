@@ -6,1418 +6,1835 @@
     <title>troywatch</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Crimson+Pro:wght@500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --bg-deep: #0F1115;
-            --surface-slate: #1A1D24;
-            --surface-elevated: #232730;
-            --text-primary: #F5F5F7;
-            --text-secondary: #8E94A3;
-            --accent-lilac: #C4B5FD;
-            --accent-lilac-dark: #2D2640;
-            --accent-coral: #FF6B6B;
-            --accent-emerald: #10B981;
-            --accent-amber: #F59E0B;
-            --radius-pill: 100px;
-            --radius-card: 20px;
-            --radius-modal: 28px;
-            --gutter: 16px;
-            --transition-soft: cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .dark {
-            --bg-deep: #0F1115;
-            --surface-slate: #1A1D24;
-            --surface-elevated: #232730;
-            --text-primary: #F5F5F7;
-            --text-secondary: #8E94A3;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        ::-webkit-scrollbar { display: none; }
-        * { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .app-container {
-            max-width: 430px;
-            margin: 0 auto;
-            min-height: 100vh;
-            padding-bottom: 100px;
-            position: relative;
-        }
-
-        /* View Management */
-        .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.4s var(--transition-soft); }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Header Section */
-        .header {
-            padding: 24px 20px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            animation: fadeSlideDown 0.6s var(--transition-soft) forwards;
-        }
-
-        @keyframes fadeSlideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header-text { flex: 1; }
-
-        .greeting {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .username {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--text-primary);
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .notification-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--surface-elevated);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.3s var(--transition-soft);
-        }
-
-        .notification-btn:active { transform: scale(0.95); }
-
-        .notification-btn i {
-            color: var(--text-secondary);
-            font-size: 18px;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 10px;
-            height: 10px;
-            background: var(--accent-coral);
-            border-radius: 50%;
-            border: 2px solid var(--bg-deep);
-        }
-
-        .profile-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: 3px solid var(--bg-deep);
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-            cursor: pointer;
-            transition: transform 0.3s var(--transition-soft);
-        }
-
-        .profile-avatar:active { transform: scale(0.95); }
-
-        .profile-avatar::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F5F5F7'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/60% no-repeat;
-            opacity: 0.9;
-        }
-
-        /* Search Section */
-        .search-section {
-            padding: 0 20px 16px;
-            animation: fadeSlideDown 0.6s var(--transition-soft) 0.1s forwards;
-            opacity: 0;
-        }
-
-        .search-bar {
-            width: 100%;
-            background: var(--surface-elevated);
-            border-radius: var(--radius-pill);
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: background 0.3s var(--transition-soft);
-        }
-
-        .search-bar:focus-within { background: #2a2f3a; }
-
-        .search-icon {
-            width: 20px;
-            height: 20px;
-            opacity: 0.5;
-            flex-shrink: 0;
-        }
-
-        .search-input {
-            flex: 1;
-            background: none;
-            border: none;
-            outline: none;
-            font-family: inherit;
-            font-size: 16px;
-            color: var(--text-primary);
-            font-weight: 400;
-        }
-
-        .search-input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        .search-clear {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--text-secondary);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .search-clear.visible { display: flex; }
-        .search-clear i { font-size: 10px; color: var(--bg-deep); }
-
-        /* Genre Pills */
-        .genre-section {
-            padding: 8px 0 20px;
-            animation: fadeSlideDown 0.6s var(--transition-soft) 0.15s forwards;
-            opacity: 0;
-        }
-
-        .genre-scroll {
-            display: flex;
-            gap: 10px;
-            padding: 0 20px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-        }
-
-        .genre-pill {
-            flex-shrink: 0;
-            padding: 10px 20px;
-            border-radius: var(--radius-pill);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-soft);
-            scroll-snap-align: start;
-            border: 1.5px solid var(--text-secondary);
-            background: transparent;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-
-        .genre-pill:active { transform: scale(0.96); }
-
-        .genre-pill.active {
-            background: var(--accent-lilac);
-            border-color: var(--accent-lilac);
-            color: var(--bg-deep);
-        }
-
-        .genre-pill:not(.active):hover {
-            border-color: var(--text-primary);
-            color: var(--text-primary);
-        }
-
-        /* Section Headers */
-        .section-header {
-            padding: 20px 20px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .see-all {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--accent-lilac);
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .see-all:hover { opacity: 0.8; }
-
-        /* Continue Watching Carousel */
-        .continue-section {
-            animation: fadeSlideUp 0.6s var(--transition-soft) 0.2s forwards;
-            opacity: 0;
-        }
-
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .carousel {
-            display: flex;
-            gap: var(--gutter);
-            padding: 0 20px 8px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-        }
-
-        .continue-card {
-            flex-shrink: 0;
-            width: 280px;
-            aspect-ratio: 16/9;
-            border-radius: var(--radius-card);
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            scroll-snap-align: start;
-            transition: transform 0.3s var(--transition-soft);
-        }
-
-        .continue-card:active { transform: scale(0.98); }
-
-        .continue-card-bg {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .continue-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(15, 17, 21, 0.95) 0%, rgba(15, 17, 21, 0.4) 50%, transparent 100%);
-        }
-
-        .continue-card-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 16px;
-            z-index: 2;
-        }
-
-        .continue-card-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .continue-card-ep {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .progress-bar {
-            height: 3px;
-            background: rgba(142, 148, 163, 0.3);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent-lilac);
-            border-radius: 3px;
-            transition: width 0.5s var(--transition-soft);
-        }
-
-        .play-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 3;
-        }
-
-        .continue-card:hover .play-overlay { opacity: 1; }
-
-        .play-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--accent-lilac);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 32px rgba(196, 181, 253, 0.4);
-        }
-
-        .play-btn i {
-            color: var(--bg-deep);
-            font-size: 20px;
-            margin-left: 3px;
-        }
-
-        /* Anime Grid */
-        .trending-section, .foryou-section, .newreleases-section, .toprated-section, .schedule-section {
-            animation: fadeSlideUp 0.6s var(--transition-soft) 0.3s forwards;
-            opacity: 0;
-        }
-
-        .anime-grid {
-            display: flex;
-            gap: var(--gutter);
-            padding: 0 20px 20px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-        }
-
-        .anime-card {
-            flex-shrink: 0;
-            width: 140px;
-            cursor: pointer;
-            scroll-snap-align: start;
-            transition: transform 0.3s var(--transition-soft);
-        }
-
-        .anime-card:active { transform: scale(0.98); }
-
-        .anime-card-image {
-            width: 100%;
-            aspect-ratio: 3/4.2;
-            border-radius: var(--radius-card);
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 12px;
-        }
-
-        .anime-card-bg {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .anime-card-image::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 40%;
-            background: linear-gradient(to top, rgba(15, 17, 21, 0.6) 0%, transparent 100%);
-        }
-
-        .tag {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 4px 10px;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: var(--radius-pill);
-            z-index: 2;
-        }
-
-        .new-tag { background: var(--accent-lilac); color: var(--bg-deep); }
-        .airing-tag { background: var(--accent-emerald); color: var(--bg-deep); }
-        .top-tag { background: var(--accent-amber); color: var(--bg-deep); }
-
-        .rating-badge {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            z-index: 2;
-        }
-
-        .rating-badge i { color: var(--accent-amber); font-size: 10px; }
-        .rating-badge span { color: var(--text-primary); font-size: 11px; font-weight: 600; }
-
-        .watchlist-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            transition: all 0.3s;
-            opacity: 0;
-        }
-
-        .anime-card:hover .watchlist-btn { opacity: 1; }
-        .watchlist-btn i { color: var(--text-primary); font-size: 14px; }
-        .watchlist-btn.added { background: var(--accent-coral); }
-        .watchlist-btn.added i { color: white; }
-
-        .anime-card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 4px;
-        }
-
-        .anime-card-meta {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .meta-dot {
-            width: 3px;
-            height: 3px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-        }
-
-        /* Schedule Section */
-        .schedule-grid {
-            padding: 0 20px 20px;
-        }
-
-        .schedule-day {
-            margin-bottom: 16px;
-        }
-
-        .schedule-day-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .schedule-day-title.today { color: var(--accent-lilac); }
-        .schedule-day-title .day-badge {
-            padding: 2px 8px;
-            background: var(--accent-lilac);
-            color: var(--bg-deep);
-            font-size: 10px;
-            border-radius: var(--radius-pill);
-        }
-
-        .schedule-items {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .schedule-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--surface-elevated);
-            border-radius: 14px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .schedule-item:hover { background: var(--surface-slate); }
-
-        .schedule-time {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--accent-lilac);
-            min-width: 50px;
-        }
-
-        .schedule-thumb {
-            width: 48px;
-            height: 64px;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .schedule-thumb-bg {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .schedule-info { flex: 1; min-width: 0; }
-
-        .schedule-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 4px;
-        }
-
-        .schedule-ep {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        /* Empty State */
-        .empty-state {
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 64px;
-            color: var(--surface-elevated);
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        /* Search Results */
-        .search-results {
-            display: none;
-            padding: 0 20px;
-        }
-
-        .search-results.visible { display: block; }
-
-        .search-results-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .search-results .anime-card { width: 100%; }
-
-        /* Explore View */
-        .explore-header {
-            padding: 24px 20px;
-            text-align: center;
-        }
-
-        .explore-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .explore-header p {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 0 20px;
-            margin-bottom: 24px;
-        }
-
-        .category-card {
-            aspect-ratio: 16/9;
-            border-radius: var(--radius-card);
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .category-card:active { transform: scale(0.98); }
-
-        .category-card-bg {
-            position: absolute;
-            inset: 0;
-        }
-
-        .category-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
-        }
-
-        .category-card-content {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-
-        .category-card i {
-            font-size: 28px;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .category-card span {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        /* Watchlist View */
-        .watchlist-header {
-            padding: 24px 20px;
-        }
-
-        .watchlist-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .watchlist-count {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .watchlist-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding: 0 20px;
-        }
-
-        .watchlist-grid .anime-card { width: 100%; }
-
-        /* Profile View */
-        .profile-header {
-            padding: 32px 20px;
-            text-align: center;
-        }
-
-        .profile-avatar-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0 auto 16px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .profile-avatar-large i {
-            font-size: 40px;
-            color: rgba(255,255,255,0.9);
-        }
-
-        .profile-name {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .profile-email {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .profile-stats {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            padding: 24px 20px;
-            border-top: 1px solid var(--surface-elevated);
-            border-bottom: 1px solid var(--surface-elevated);
-            margin: 20px 0;
-        }
-
-        .stat-item { text-align: center; }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .settings-section {
-            padding: 0 20px;
-        }
-
-        .settings-group {
-            margin-bottom: 24px;
-        }
-
-        .settings-group-title {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 12px;
-        }
-
-        .settings-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background: var(--surface-elevated);
-            border-radius: 14px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .settings-item:hover { background: var(--surface-slate); }
-
-        .settings-item-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .settings-item i.icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--accent-lilac-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-lilac);
-            font-size: 16px;
-        }
-
-        .settings-item-text h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .settings-item-text p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .settings-item i.arrow {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .toggle-switch {
-            width: 48px;
-            height: 28px;
-            background: var(--surface-slate);
-            border-radius: 14px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .toggle-switch.active { background: var(--accent-lilac); }
-
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: transform 0.3s;
-        }
-
-        .toggle-switch.active::after { transform: translateX(20px); }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(26, 29, 36, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 14px 28px;
-            display: flex;
-            gap: 32px;
-            z-index: 100;
-            animation: slideUp 0.5s var(--transition-soft) 0.5s forwards;
-            opacity: 0;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        .nav-item {
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.3s var(--transition-soft);
-            position: relative;
-        }
-
-        .nav-item:active { transform: scale(0.9); }
-
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--text-secondary);
-            stroke-width: 1.5;
-            fill: none;
-            transition: all 0.3s var(--transition-soft);
-        }
-
-        .nav-item.active svg {
-            stroke: var(--text-primary);
-            fill: var(--text-primary);
-        }
-
-        .nav-item::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            width: 4px;
-            height: 4px;
-            background: var(--accent-lilac);
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s var(--transition-soft);
-        }
-
-        .nav-item.active::after { opacity: 1; }
-
-        .nav-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            min-width: 16px;
-            height: 16px;
-            background: var(--accent-coral);
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 200;
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .modal-overlay.visible { display: flex; }
-
-        .modal {
-            width: 100%;
-            max-width: 430px;
-            max-height: 90vh;
-            background: var(--surface-slate);
-            border-radius: var(--radius-modal) var(--radius-modal) 0 0;
-            overflow: hidden;
-            transform: translateY(100%);
-            transition: transform 0.4s var(--transition-soft);
-        }
-
-        .modal-overlay.visible .modal { transform: translateY(0); }
-
-        .modal-header {
-            position: relative;
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .modal-header-bg {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .modal-header::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, var(--surface-slate) 0%, transparent 100%);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .modal-close i { color: white; font-size: 16px; }
-
-        .modal-content {
-            padding: 0 20px 32px;
-            max-height: calc(90vh - 200px);
-            overflow-y: auto;
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .modal-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .modal-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            background: var(--accent-amber);
-            border-radius: var(--radius-pill);
-        }
-
-        .modal-rating i { color: var(--bg-deep); font-size: 12px; }
-        .modal-rating span { color: var(--bg-deep); font-size: 12px; font-weight: 700; }
-
-        .modal-info-tag {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .modal-genres {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .modal-genre {
-            padding: 6px 14px;
-            background: var(--surface-elevated);
-            border-radius: var(--radius-pill);
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .modal-description {
-            font-size: 14px;
-            line-height: 1.7;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 14px;
-            border-radius: 14px;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: none;
-            transition: all 0.3s;
-        }
-
-        .modal-btn.primary {
-            background: var(--accent-lilac);
-            color: var(--bg-deep);
-        }
-
-        .modal-btn.primary:hover { background: #b3a3f0; }
-
-        .modal-btn.secondary {
-            background: var(--surface-elevated);
-            color: var(--text-primary);
-        }
-
-        .modal-btn.secondary:hover { background: #2d323d; }
-        .modal-btn.secondary.added { background: var(--accent-coral); color: white; }
-
-        .episodes-section h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .episode-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .episode-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--surface-elevated);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .episode-item:hover { background: #2d323d; }
-
-        .episode-thumb {
-            width: 100px;
-            height: 56px;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
-            position: relative;
-        }
-
-        .episode-thumb-bg {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .episode-thumb i {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            background: rgba(0,0,0,0.3);
-        }
-
-        .episode-info { flex: 1; min-width: 0; }
-
-        .episode-number {
-            font-size: 11px;
-            color: var(--accent-lilac);
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .episode-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 2px;
-        }
-
-        .episode-duration {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: var(--surface-elevated);
-            padding: 14px 24px;
-            border-radius: var(--radius-pill);
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s var(--transition-soft);
-            z-index: 300;
-        }
-
-        .toast.visible {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast i { color: var(--accent-lilac); }
-
-        /* Art Gradients */
-        .art-1 { background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
-        .art-2 { background: linear-gradient(145deg, #2d132c 0%, #801336 50%, #c72c41 100%); }
-        .art-3 { background: linear-gradient(145deg, #1b262c 0%, #0f4c75 50%, #3282b8 100%); }
-        .art-4 { background: linear-gradient(145deg, #222831 0%, #393e46 50%, #00adb5 100%); }
-        .art-5 { background: linear-gradient(145deg, #2c3e50 0%, #4ca1af 50%, #2c3e50 100%); }
-        .art-6 { background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%); }
-        .art-7 { background: linear-gradient(145deg, #200122 0%, #6f0000 100%); }
-        .art-8 { background: linear-gradient(145deg, #1f1c2c 0%, #928dab 100%); }
-        .art-9 { background: linear-gradient(145deg, #134e5e 0%, #71b280 100%); }
-        .art-10 { background: linear-gradient(145deg, #373B44 0%, #4286f4 100%); }
-        .art-11 { background: linear-gradient(145deg, #141E30 0%, #243B55 100%); }
-        .art-12 { background: linear-gradient(145deg, #4b6cb7 0%, #182848 100%); }
-
-        /* Category Colors */
-        .cat-action { background: linear-gradient(135deg, #c72c41, #801336); }
-        .cat-romance { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
-        .cat-comedy { background: linear-gradient(135deg, #f7b733, #fc4a1a); }
-        .cat-fantasy { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .cat-scifi { background: linear-gradient(135deg, #00b4db, #0083b0); }
-        .cat-horror { background: linear-gradient(135deg, #2c3e50, #4c4c4c); }
-        .cat-sports { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .cat-drama { background: linear-gradient(135deg, #614385, #516395); }
-
-        /* Responsive */
-        @media (max-width: 380px) {
-            .username { font-size: 28px; }
-            .anime-card { width: 130px; }
-            .continue-card { width: 260px; }
-            .bottom-nav { gap: 24px; padding: 14px 24px; }
-        }
+:root {
+    --bg-void: #0D0D0F;
+    --bg-surface: #151518;
+    --bg-elevated: #1C1C21;
+    --bg-interactive: #242429;
+    --text-primary: #F8F7F4;
+    --text-secondary: #8A8A8F;
+    --text-muted: #5C5C61;
+    --accent: #E8B86D;
+    --accent-dim: rgba(232, 184, 109, 0.15);
+    --accent-glow: rgba(232, 184, 109, 0.4);
+    --coral: #E85D5D;
+    --emerald: #4ADE80;
+    --cyan: #22D3EE;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-full: 100px;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Sora', system-ui, sans-serif;
+    background: var(--bg-void);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+.app {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 110px;
+    position: relative;
+    background: var(--bg-void);
+}
+
+.app::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.view { display: none; }
+.view.active {
+    display: block;
+    animation: viewEnter 0.4s var(--ease-out);
+}
+
+@keyframes viewEnter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.header {
+    padding: 28px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-brand { display: flex; flex-direction: column; gap: 4px; }
+
+.header-greeting {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.header-username {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
+
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--bg-interactive);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    position: relative;
+}
+
+.icon-btn:active { transform: scale(0.92); }
+.icon-btn i { color: var(--text-secondary); font-size: 16px; }
+
+.icon-btn.has-badge::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: var(--coral);
+    border-radius: 50%;
+    border: 2px solid var(--bg-void);
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, #D4956A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-bounce);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--bg-void);
+}
+
+.avatar:active { transform: scale(0.92); }
+
+/* Search */
+.search-wrapper { padding: 0 20px 16px; }
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-interactive);
+    border-radius: var(--radius-full);
+    padding: 12px 18px;
+    transition: all 0.3s var(--ease-out);
+}
+
+.search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.search-box i { color: var(--text-muted); font-size: 14px; }
+
+.search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-clear {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.search-clear.visible { display: flex; }
+.search-clear i { font-size: 9px; color: var(--bg-void); }
+
+/* Genre Pills */
+.genre-bar {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 20px;
+    overflow-x: auto;
+}
+
+.genre-chip {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    background: transparent;
+    border: 1.5px solid var(--bg-interactive);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.genre-chip:active { transform: scale(0.95); }
+
+.genre-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-void);
+}
+
+.genre-chip:not(.active):hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+/* Section Headers */
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 20px 14px;
+}
+
+.section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.section-more {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.section-more:hover { opacity: 0.7; }
+
+/* Continue Watching Cards */
+.hero-carousel {
+    display: flex;
+    gap: 14px;
+    padding: 0 20px 16px;
+    overflow-x: auto;
+}
+
+.hero-card {
+    flex-shrink: 0;
+    width: 290px;
+    aspect-ratio: 16/9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-out);
+}
+
+.hero-card:active { transform: scale(0.98); }
+
+.hero-card-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,
+        rgba(13, 13, 15, 0.98) 0%,
+        rgba(13, 13, 15, 0.6) 40%,
+        transparent 70%);
+}
+
+.hero-card-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 18px;
+    z-index: 2;
+}
+
+.hero-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hero-card-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.progress-track {
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+}
+
+.hero-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s var(--ease-bounce);
+    box-shadow: 0 8px 30px var(--accent-glow);
+}
+
+.hero-card:hover .hero-play-btn {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.hero-play-btn i {
+    color: var(--bg-void);
+    font-size: 18px;
+    margin-left: 2px;
+}
+
+/* ===== REDESIGNED ANIME CARDS ===== */
+.anime-row {
+    display: flex;
+    gap: 14px;
+    padding: 0 20px 24px;
+    overflow-x: auto;
+}
+
+.anime-tile {
+    flex-shrink: 0;
+    width: 140px;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-out);
+}
+
+.anime-tile:active { transform: scale(0.97); }
+
+.anime-tile-img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.anime-tile-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.anime-tile-img::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(13,13,15,0.85), transparent);
+}
+
+.tile-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    z-index: 2;
+}
+
+.tile-badge.new { background: var(--accent); color: var(--bg-void); }
+.tile-badge.airing { background: var(--emerald); color: var(--bg-void); }
+.tile-badge.top { background: var(--coral); color: #fff; }
+
+.tile-rating {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+}
+
+.tile-rating i { color: var(--accent); font-size: 10px; }
+.tile-rating span { color: var(--text-primary); font-size: 11px; font-weight: 700; }
+
+.tile-heart {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-out);
+}
+
+.tile-heart i { color: var(--text-primary); font-size: 12px; }
+.tile-heart.active { background: var(--coral); }
+.tile-heart.active i { color: #fff; }
+
+.tile-ep-count {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.6);
+    padding: 3px 6px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.anime-tile-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.anime-tile-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.anime-tile-meta .dot {
+    width: 3px;
+    height: 3px;
+    background: var(--text-muted);
+    border-radius: 50%;
+}
+
+.anime-tile-status {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--emerald);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.anime-tile-status.complete { color: var(--text-muted); }
+
+/* Search Results */
+.search-results { display: none; padding: 0 20px; }
+.search-results.visible { display: block; }
+
+.search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.search-results .anime-tile { width: 100%; }
+
+/* ===== FANSUB OF THE MONTH ===== */
+.fansub-banner {
+    margin: 0 20px 20px;
+    padding: 18px 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-interactive);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.fansub-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+.fansub-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fansub-label i { font-size: 12px; }
+
+.fansub-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.fansub-info { flex: 1; min-width: 0; }
+
+.fansub-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.fansub-votes {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fansub-votes i { color: var(--accent); font-size: 10px; }
+
+.fansub-celebrate-btn {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: var(--bg-void);
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-out);
+    flex-shrink: 0;
+}
+
+.fansub-celebrate-btn:active { transform: scale(0.95); }
+.fansub-celebrate-btn.celebrated {
+    background: var(--bg-interactive);
+    color: var(--text-secondary);
+}
+
+/* ===== HOMEPAGE STAFF PICKS / SEASONAL ===== */
+.staff-picks-row {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px 24px;
+    overflow-x: auto;
+}
+
+.staff-pick-card {
+    flex-shrink: 0;
+    width: 220px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-out);
+    border: 1px solid var(--bg-interactive);
+}
+
+.staff-pick-card:active { transform: scale(0.97); }
+
+.staff-pick-cover {
+    width: 100%;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.staff-pick-cover-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.staff-pick-cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, var(--bg-surface), transparent);
+}
+
+.staff-pick-body { padding: 12px 14px 14px; }
+
+.staff-pick-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.staff-pick-reason {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Milestone counter section */
+.milestone-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px 24px;
+    overflow-x: auto;
+}
+
+.milestone-card {
+    flex-shrink: 0;
+    width: 130px;
+    padding: 16px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-interactive);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.milestone-num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.milestone-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Explore View */
+.explore-hero {
+    padding: 28px 20px;
+    text-align: center;
+}
+
+.explore-hero h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+
+.explore-hero p { font-size: 13px; color: var(--text-secondary); }
+
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 0 20px 20px;
+}
+
+.cat-card {
+    aspect-ratio: 16/10;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-out);
+}
+
+.cat-card:active { transform: scale(0.97); }
+
+.cat-card-bg { position: absolute; inset: 0; }
+
+.cat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+}
+
+.cat-card-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.cat-card i { font-size: 24px; color: var(--text-primary); margin-bottom: 6px; }
+.cat-card span { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+
+/* ===== POPULARITY RANKING ===== */
+.ranking-list { padding: 0 20px 24px; }
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.25s;
+    border: 1px solid transparent;
+}
+
+.ranking-item:hover { background: var(--bg-elevated); }
+
+.ranking-item:first-child { border-color: var(--accent-dim); }
+
+.ranking-pos {
+    width: 28px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.ranking-item:first-child .ranking-pos { color: var(--accent); }
+.ranking-item:nth-child(2) .ranking-pos { color: var(--text-secondary); }
+.ranking-item:nth-child(3) .ranking-pos { color: var(--text-secondary); }
+
+.ranking-thumb {
+    width: 44px;
+    height: 58px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.ranking-thumb-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.ranking-info { flex: 1; min-width: 0; }
+
+.ranking-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.ranking-ep {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.ranking-change {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ranking-change.up { color: var(--emerald); }
+.ranking-change.down { color: var(--coral); }
+.ranking-change.same { color: var(--text-muted); }
+
+/* ===== MASONRY LAYOUT ===== */
+.masonry-section { padding: 0 20px 24px; }
+
+.masonry-grid {
+    columns: 2;
+    column-gap: 12px;
+}
+
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 12px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-out);
+}
+
+.masonry-item:active { transform: scale(0.97); }
+
+.masonry-item-bg {
+    width: 100%;
+    display: block;
+}
+
+.masonry-item-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    background: linear-gradient(to top, rgba(13,13,15,0.95), transparent);
+}
+
+.masonry-item-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.masonry-item-meta {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+/* Schedule */
+.schedule-list { padding: 0 20px 20px; }
+.schedule-day { margin-bottom: 18px; }
+
+.schedule-day-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-day-header.today { color: var(--accent); }
+
+.schedule-day-header .today-badge {
+    padding: 2px 8px;
+    background: var(--accent);
+    color: var(--bg-void);
+    font-size: 9px;
+    border-radius: var(--radius-full);
+}
+
+.schedule-items { display: flex; flex-direction: column; gap: 8px; }
+
+.schedule-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.schedule-entry:hover { background: var(--bg-elevated); }
+
+.schedule-time {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 45px;
+}
+
+.schedule-thumb {
+    width: 44px;
+    height: 58px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.schedule-thumb-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.schedule-info { flex: 1; min-width: 0; }
+
+.schedule-info-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.schedule-info-ep { font-size: 10px; color: var(--text-muted); }
+
+/* Watchlist */
+.watchlist-head { padding: 28px 20px; }
+
+.watchlist-head h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.watchlist-head p { font-size: 13px; color: var(--text-secondary); }
+
+.watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 0 20px;
+}
+
+.watchlist-grid .anime-tile { width: 100%; }
+
+.empty-placeholder {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-placeholder i {
+    font-size: 56px;
+    color: var(--bg-interactive);
+    margin-bottom: 18px;
+}
+
+.empty-placeholder h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.empty-placeholder p { font-size: 13px; color: var(--text-muted); }
+
+/* Profile */
+.profile-hero { padding: 32px 20px; text-align: center; }
+
+.profile-avatar-lg {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, #D4956A 100%);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-avatar-lg i { font-size: 36px; color: var(--bg-void); }
+
+.profile-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.profile-email { font-size: 13px; color: var(--text-secondary); }
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    padding: 24px 20px;
+    border-top: 1px solid var(--bg-elevated);
+    border-bottom: 1px solid var(--bg-elevated);
+    margin: 20px 0;
+}
+
+.stat { text-align: center; }
+.stat-num { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+.stat-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+.settings-block { padding: 0 20px; }
+.settings-group { margin-bottom: 24px; }
+
+.settings-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.settings-row:hover { background: var(--bg-elevated); }
+.settings-row-left { display: flex; align-items: center; gap: 12px; }
+
+.settings-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-icon i { color: var(--accent); font-size: 14px; }
+
+.settings-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 1px; }
+.settings-text p { font-size: 11px; color: var(--text-muted); }
+
+.settings-row i.arrow { color: var(--text-muted); font-size: 12px; }
+
+.toggle {
+    width: 44px;
+    height: 26px;
+    background: var(--bg-interactive);
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.toggle.on { background: var(--accent); }
+
+.toggle::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.3s var(--ease-out);
+}
+
+.toggle.on::after { transform: translateX(18px); }
+
+/* ===== THEME COLOR PICKER ===== */
+.color-picker-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.25s var(--ease-out);
+    position: relative;
+}
+
+.color-swatch:active { transform: scale(0.9); }
+
+.color-swatch.active {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+
+.color-swatch.active::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--bg-void);
+}
+
+/* ===== NOTIFICATION PANEL ===== */
+.notif-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 430px;
+    height: 100vh;
+    background: var(--bg-void);
+    z-index: 250;
+    transition: right 0.35s var(--ease-out);
+    display: flex;
+    flex-direction: column;
+}
+
+.notif-panel.open { right: 0; }
+
+.notif-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 20px 16px;
+    border-bottom: 1px solid var(--bg-interactive);
+}
+
+.notif-panel-header h2 {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.notif-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+.notif-close:hover { background: var(--bg-interactive); }
+.notif-close i { color: var(--text-secondary); font-size: 14px; }
+
+.notif-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 20px;
+}
+
+.notif-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--bg-elevated);
+    cursor: pointer;
+}
+
+.notif-item:last-child { border-bottom: none; }
+
+.notif-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notif-icon-wrap.ep { background: rgba(74, 222, 128, 0.12); }
+.notif-icon-wrap.ep i { color: var(--emerald); }
+
+.notif-icon-wrap.rec { background: var(--accent-dim); }
+.notif-icon-wrap.rec i { color: var(--accent); }
+
+.notif-icon-wrap.sys { background: rgba(34, 211, 238, 0.12); }
+.notif-icon-wrap.sys i { color: var(--cyan); }
+
+.notif-icon-wrap.social { background: rgba(232, 93, 93, 0.12); }
+.notif-icon-wrap.social i { color: var(--coral); }
+
+.notif-content { flex: 1; min-width: 0; }
+
+.notif-content h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.notif-content p {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.notif-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.notif-unread { position: relative; }
+.notif-unread::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: -12px;
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+.notif-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.notif-empty i { font-size: 40px; margin-bottom: 12px; display: block; color: var(--bg-interactive); }
+
+.notif-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 240;
+    display: none;
+}
+
+.notif-backdrop.open { display: block; }
+
+.notif-mark-read {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 4px;
+}
+
+/* Bottom Nav */
+.nav-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(21, 21, 24, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--bg-interactive);
+    border-radius: 22px;
+    padding: 12px 26px;
+    display: flex;
+    gap: 30px;
+    z-index: 100;
+}
+
+.nav-btn {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.3s var(--ease-bounce);
+}
+
+.nav-btn:active { transform: scale(0.85); }
+
+.nav-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-muted);
+    stroke-width: 1.8;
+    fill: none;
+    transition: all 0.3s var(--ease-out);
+}
+
+.nav-btn.active svg { stroke: var(--text-primary); fill: var(--text-primary); }
+
+.nav-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.nav-btn.active::after { opacity: 1; }
+
+.nav-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 15px;
+    height: 15px;
+    background: var(--coral);
+    border-radius: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+/* Modal */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.modal-backdrop.open { display: flex; }
+
+.modal-sheet {
+    width: 100%;
+    max-width: 430px;
+    max-height: 92vh;
+    background: var(--bg-surface);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform 0.4s var(--ease-out);
+}
+
+.modal-backdrop.open .modal-sheet { transform: translateY(0); }
+
+.modal-cover {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.modal-cover-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.modal-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--bg-surface) 0%, transparent 100%);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.modal-close-btn i { color: #fff; font-size: 14px; }
+
+.modal-body {
+    padding: 0 20px 32px;
+    max-height: calc(92vh - 180px);
+    overflow-y: auto;
+}
+
+.modal-title { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+
+.modal-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.modal-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: var(--accent);
+    border-radius: var(--radius-full);
+}
+
+.modal-rating-badge i { color: var(--bg-void); font-size: 10px; }
+.modal-rating-badge span { color: var(--bg-void); font-size: 11px; font-weight: 700; }
+
+.modal-info { font-size: 11px; color: var(--text-muted); }
+
+.modal-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.modal-tag {
+    padding: 6px 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.modal-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    transition: all 0.3s;
+}
+
+.modal-btn.primary { background: var(--accent); color: var(--bg-void); }
+.modal-btn.primary:hover { filter: brightness(1.1); }
+
+.modal-btn.secondary { background: var(--bg-elevated); color: var(--text-primary); }
+.modal-btn.secondary:hover { background: var(--bg-interactive); }
+.modal-btn.secondary.added { background: var(--coral); color: #fff; }
+
+.episodes-block h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.episode-items { display: flex; flex-direction: column; gap: 8px; }
+
+.episode-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.episode-row:hover { background: var(--bg-interactive); }
+
+.episode-thumb {
+    width: 90px;
+    height: 50px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.episode-thumb-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.episode-thumb i {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    background: rgba(0,0,0,0.35);
+}
+
+.episode-info { flex: 1; min-width: 0; }
+.episode-num { font-size: 10px; color: var(--accent); font-weight: 600; margin-bottom: 2px; }
+
+.episode-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.episode-dur { font-size: 10px; color: var(--text-muted); }
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--bg-elevated);
+    border: 1px solid var(--bg-interactive);
+    padding: 12px 22px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s var(--ease-out);
+    z-index: 300;
+}
+
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast i { color: var(--accent); }
+
+/* Art Gradients */
+.grad-1 { background: linear-gradient(145deg, #1a1a2e, #16213e, #0f3460); }
+.grad-2 { background: linear-gradient(145deg, #2d132c, #801336, #c72c41); }
+.grad-3 { background: linear-gradient(145deg, #1b262c, #0f4c75, #3282b8); }
+.grad-4 { background: linear-gradient(145deg, #222831, #393e46, #00adb5); }
+.grad-5 { background: linear-gradient(145deg, #2c3e50, #4ca1af, #2c3e50); }
+.grad-6 { background: linear-gradient(145deg, #0f0c29, #302b63, #24243e); }
+.grad-7 { background: linear-gradient(145deg, #200122, #6f0000); }
+.grad-8 { background: linear-gradient(145deg, #1f1c2c, #928dab); }
+.grad-9 { background: linear-gradient(145deg, #134e5e, #71b280); }
+.grad-10 { background: linear-gradient(145deg, #373B44, #4286f4); }
+.grad-11 { background: linear-gradient(145deg, #141E30, #243B55); }
+.grad-12 { background: linear-gradient(145deg, #4b6cb7, #182848); }
+
+/* Category Colors */
+.cat-action { background: linear-gradient(135deg, #c72c41, #801336); }
+.cat-romance { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
+.cat-comedy { background: linear-gradient(135deg, #f7b733, #fc4a1a); }
+.cat-fantasy { background: linear-gradient(135deg, #667eea, #764ba2); }
+.cat-scifi { background: linear-gradient(135deg, #00b4db, #0083b0); }
+.cat-horror { background: linear-gradient(135deg, #2c3e50, #4c4c4c); }
+.cat-sports { background: linear-gradient(135deg, #11998e, #38ef7d); }
+.cat-drama { background: linear-gradient(135deg, #614385, #516395); }
+
+@media (max-width: 380px) {
+    .header-username { font-size: 24px; }
+    .anime-tile { width: 120px; }
+    .hero-card { width: 260px; }
+    .nav-bar { gap: 22px; padding: 12px 22px; }
+}
+
+/* Footer */
+.site-footer {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    border-top: 1px solid rgba(255,255,255,0.03);
+    position: relative;
+    padding: 18px 20px;
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.footer-inner {
+    max-width: 430px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-left { display: flex; flex-direction: column; gap: 4px; }
+
+.brand {
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.footer-left .copyright { font-size: 12px; color: var(--text-muted); }
+
+.footer-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12px;
+    transition: color 0.15s;
+}
+
+.footer-link:hover { color: var(--text-primary); }
+
+.sep { color: rgba(255,255,255,0.06); margin: 0 4px; }
+
+.footer-right { display: flex; gap: 8px; align-items: center; }
+
+.footer-right .social {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.02);
+    color: var(--text-primary);
+    font-size: 14px;
+    text-decoration: none;
+    transition: transform 0.18s var(--ease-out), background 0.18s;
+}
+
+.footer-right .social:active { transform: scale(0.95); }
+.footer-right .social:hover { background: rgba(232,184,109,0.08); color: var(--accent); }
+
+@media (max-width: 420px) {
+    .footer-inner { padding: 6px 0; gap: 10px; }
+    .footer-center { order: 3; width: 100%; justify-content: center; margin-top: 6px; }
+    .footer-left { order: 1; }
+    .footer-right { order: 2; }
+}
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- HOME VIEW -->
-        <div class="view active" id="homeView">
+    <div class="app">
+        <!-- HOME -->
+        <div class="view active" id="viewHome">
             <header class="header">
-                <div class="header-text">
-                    <p class="greeting">Welcome back,</p>
-                    <h1 class="username">Admin</h1>
+                <div class="header-brand">
+                    <span class="header-greeting">Good Evening</span>
+                    <h1 class="header-username">FENASI</h1>
                 </div>
                 <div class="header-actions">
-                    <div class="notification-btn">
+                    <div class="icon-btn has-badge" id="notifBtn" onclick="openNotifPanel()">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge"></span>
                     </div>
-                    <div class="profile-avatar" onclick="switchView('profileView')"></div>
+                    <div class="avatar" onclick="goToView('viewProfile')">A</div>
                 </div>
             </header>
 
-            <section class="search-section">
-                <div class="search-bar">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="M21 21l-4.35-4.35"/>
-                    </svg>
-                    <input type="text" class="search-input" placeholder="Search titles, characters..." id="searchInput">
-                    <div class="search-clear" id="searchClear">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" placeholder="Search titles, genres..." id="mainSearch">
+                    <div class="search-clear" id="mainSearchClear">
                         <i class="fas fa-times"></i>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section class="search-results" id="searchResults">
-                <div class="section-header">
-                    <span class="section-title">Search Results</span>
-                    <span class="see-all" onclick="clearSearch()">Clear</span>
+            <div class="search-results" id="searchResultsPane">
+                <div class="section-head">
+                    <span class="section-label">Results</span>
+                    <span class="section-more" onclick="clearMainSearch()">Clear</span>
                 </div>
                 <div class="search-results-grid" id="searchResultsGrid"></div>
-            </section>
+            </div>
 
-            <div id="homeContent">
-                <section class="genre-section">
-                    <div class="genre-scroll" id="genreScroll"></div>
+            <div id="homeMainContent">
+                <!-- Fansub of the Month Banner -->
+                <div class="fansub-banner" id="fansubBanner"></div>
+
+                <div class="genre-bar" id="genreBar"></div>
+
+                <section id="continueSection">
+                    <div class="section-head">
+                        <span class="section-label">Continue Watching</span>
+                        <span class="section-more">See All</span>
+                    </div>
+                    <div class="hero-carousel" id="continueCarousel"></div>
                 </section>
 
-                <section class="continue-section" id="continueSection">
-                    <div class="section-header">
-                        <span class="section-title">Continue Watching</span>
-                        <span class="see-all">See All</span>
+                <section>
+                    <div class="section-head">
+                        <span class="section-label">Trending Now</span>
+                        <span class="section-more">See All</span>
                     </div>
-                    <div class="carousel" id="continueCarousel"></div>
+                    <div class="anime-row" id="trendingRow"></div>
                 </section>
 
-                <section class="trending-section">
-                    <div class="section-header">
-                        <span class="section-title">Trending Now</span>
-                        <span class="see-all">See All</span>
+                <!-- Staff Picks (new homepage section) -->
+                <section>
+                    <div class="section-head">
+                        <span class="section-label">Staff Picks</span>
+                        <span class="section-more">See All</span>
                     </div>
-                    <div class="anime-grid" id="trendingGrid"></div>
+                    <div class="staff-picks-row" id="staffPicksRow"></div>
                 </section>
 
-                <section class="toprated-section">
-                    <div class="section-header">
-                        <span class="section-title">Top Rated</span>
-                        <span class="see-all">See All</span>
+                <section>
+                    <div class="section-head">
+                        <span class="section-label">Top Rated</span>
+                        <span class="section-more">See All</span>
                     </div>
-                    <div class="anime-grid" id="topRatedGrid"></div>
+                    <div class="anime-row" id="topRatedRow"></div>
                 </section>
 
-                <section class="newreleases-section">
-                    <div class="section-header">
-                        <span class="section-title">New Releases</span>
-                        <span class="see-all">See All</span>
+                <!-- Community Milestones (new homepage section) -->
+                <section>
+                    <div class="section-head">
+                        <span class="section-label">Community Milestones</span>
                     </div>
-                    <div class="anime-grid" id="newReleasesGrid"></div>
+                    <div class="milestone-row" id="milestoneRow"></div>
                 </section>
 
-                <section class="foryou-section">
-                    <div class="section-header">
-                        <span class="section-title">For You</span>
-                        <span class="see-all">See All</span>
+                <section>
+                    <div class="section-head">
+                        <span class="section-label">New Releases</span>
+                        <span class="section-more">See All</span>
                     </div>
-                    <div class="anime-grid" id="forYouGrid"></div>
+                    <div class="anime-row" id="newReleasesRow"></div>
+                </section>
+
+                <section>
+                    <div class="section-head">
+                        <span class="section-label">For You</span>
+                        <span class="section-more">See All</span>
+                    </div>
+                    <div class="anime-row" id="forYouRow"></div>
                 </section>
             </div>
         </div>
 
-        <!-- EXPLORE VIEW -->
-        <div class="view" id="exploreView">
-            <div class="explore-header">
+        <!-- EXPLORE -->
+        <div class="view" id="viewExplore">
+            <div class="explore-hero">
                 <h1>Explore</h1>
                 <p>Discover your next favorite anime</p>
             </div>
 
-            <section class="search-section" style="animation: none; opacity: 1;">
-                <div class="search-bar">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="M21 21l-4.35-4.35"/>
-                    </svg>
-                    <input type="text" class="search-input" placeholder="Search anime..." id="exploreSearchInput">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" placeholder="Search anime..." id="exploreSearch">
                 </div>
-            </section>
-
-            <div class="section-header">
-                <span class="section-title">Browse by Genre</span>
             </div>
 
-            <div class="category-grid" id="categoryGrid"></div>
+            <div class="section-head">
+                <span class="section-label">Browse by Genre</span>
+            </div>
+            <div class="cat-grid" id="catGrid"></div>
 
-            <section class="schedule-section" style="animation: none; opacity: 1;">
-                <div class="section-header">
-                    <span class="section-title">Airing Schedule</span>
-                </div>
-                <div class="schedule-grid" id="scheduleGrid"></div>
-            </section>
+            <div class="section-head">
+                <span class="section-label">Airing Schedule</span>
+            </div>
+            <div class="schedule-list" id="scheduleList"></div>
+
+            <!-- Popularity Ranking -->
+            <div class="section-head">
+                <span class="section-label">Popularity Ranking</span>
+                <span class="section-more">This Week</span>
+            </div>
+            <div class="ranking-list" id="rankingList"></div>
+
+            <!-- Masonry Layout -->
+            <div class="section-head">
+                <span class="section-label">Discover</span>
+                <span class="section-more">See All</span>
+            </div>
+            <div class="masonry-section" id="masonrySection"></div>
         </div>
 
-        <!-- WATCHLIST VIEW -->
-        <div class="view" id="watchlistView">
-            <div class="watchlist-header">
+        <!-- WATCHLIST -->
+        <div class="view" id="viewWatchlist">
+            <div class="watchlist-head">
                 <h1>My Watchlist</h1>
-                <p class="watchlist-count"><span id="watchlistCount">0</span> titles saved</p>
+                <p><span id="watchlistNum">0</span> titles saved</p>
             </div>
-
             <div id="watchlistContent">
                 <div class="watchlist-grid" id="watchlistGrid"></div>
-                <div class="empty-state" id="emptyWatchlist" style="display: none;">
+                <div class="empty-placeholder" id="emptyWatchlist" style="display:none;">
                     <i class="far fa-heart"></i>
                     <h3>Your watchlist is empty</h3>
                     <p>Start adding anime to keep track of what you want to watch</p>
@@ -1425,92 +1842,106 @@
             </div>
         </div>
 
-        <!-- PROFILE VIEW -->
-        <div class="view" id="profileView">
-            <div class="profile-header">
-                <div class="profile-avatar-large">
+        <!-- PROFILE -->
+        <div class="view" id="viewProfile">
+            <div class="profile-hero">
+                <div class="profile-avatar-lg">
                     <i class="fas fa-user"></i>
                 </div>
-                <h1 class="profile-name">Admin</h1>
-                <p class="profile-email">admin@troywatch.com</p>
+                <h1 class="profile-name">FENASI</h1>
+                <p class="profile-email">fenasi@troywatch.com</p>
             </div>
 
             <div class="profile-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="statWatching">3</div>
-                    <div class="stat-label">Watching</div>
+                <div class="stat">
+                    <div class="stat-num">3</div>
+                    <div class="stat-lbl">Watching</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statCompleted">47</div>
-                    <div class="stat-label">Completed</div>
+                <div class="stat">
+                    <div class="stat-num">47</div>
+                    <div class="stat-lbl">Completed</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statPlanned">12</div>
-                    <div class="stat-label">Planned</div>
+                <div class="stat">
+                    <div class="stat-num">12</div>
+                    <div class="stat-lbl">Planned</div>
                 </div>
             </div>
 
-            <div class="settings-section">
+            <div class="settings-block">
                 <div class="settings-group">
-                    <div class="settings-group-title">Preferences</div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-bell icon"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-group-label">Preferences</div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon"><i class="fas fa-bell"></i></div>
+                            <div class="settings-text">
                                 <h4>Notifications</h4>
                                 <p>Get notified about new episodes</p>
                             </div>
                         </div>
-                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
                     </div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-closed-captioning icon"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon"><i class="fas fa-closed-captioning"></i></div>
+                            <div class="settings-text">
                                 <h4>Subtitles</h4>
                                 <p>English (default)</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right arrow"></i>
                     </div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-video icon"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon"><i class="fas fa-video"></i></div>
+                            <div class="settings-text">
                                 <h4>Video Quality</h4>
                                 <p>Auto (recommended)</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right arrow"></i>
                     </div>
+                    <!-- Theme Color Switcher -->
+                    <div class="settings-row" id="themeColorRow" style="flex-direction:column;align-items:stretch;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                            <div class="settings-row-left">
+                                <div class="settings-icon"><i class="fas fa-palette"></i></div>
+                                <div class="settings-text">
+                                    <h4>Theme Color</h4>
+                                    <p>Change your accent color</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right arrow" id="themeArrow" style="transition:transform 0.25s;"></i>
+                        </div>
+                        <div class="color-picker-row" id="colorPickerRow" style="display:none;"></div>
+                    </div>
                 </div>
 
                 <div class="settings-group">
-                    <div class="settings-group-title">Account</div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-user-edit icon"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-group-label">Account</div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon"><i class="fas fa-user-edit"></i></div>
+                            <div class="settings-text">
                                 <h4>Edit Profile</h4>
                                 <p>Change name, avatar</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right arrow"></i>
                     </div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-history icon"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon"><i class="fas fa-history"></i></div>
+                            <div class="settings-text">
                                 <h4>Watch History</h4>
                                 <p>View your activity</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right arrow"></i>
                     </div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-crown icon" style="color: var(--accent-amber);"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon" style="background:rgba(232,93,93,0.15);"><i class="fas fa-crown" style="color:var(--accent);"></i></div>
+                            <div class="settings-text">
                                 <h4>Premium</h4>
                                 <p>Upgrade for ad-free viewing</p>
                             </div>
@@ -1520,21 +1951,21 @@
                 </div>
 
                 <div class="settings-group">
-                    <div class="settings-group-title">Support</div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-question-circle icon"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-group-label">Support</div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon"><i class="fas fa-question-circle"></i></div>
+                            <div class="settings-text">
                                 <h4>Help Center</h4>
                                 <p>FAQs and guides</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right arrow"></i>
                     </div>
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <i class="fas fa-sign-out-alt icon" style="color: var(--accent-coral);"></i>
-                            <div class="settings-item-text">
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <div class="settings-icon" style="background:rgba(232,93,93,0.15);"><i class="fas fa-sign-out-alt" style="color:var(--coral);"></i></div>
+                            <div class="settings-text">
                                 <h4>Sign Out</h4>
                                 <p>Log out of your account</p>
                             </div>
@@ -1545,496 +1976,803 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <div class="nav-item active" data-view="homeView">
-                <svg viewBox="0 0 24 24">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
+        <!-- NAV -->
+        <nav class="nav-bar">
+            <div class="nav-btn active" data-view="viewHome">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
-            <div class="nav-item" data-view="exploreView">
-                <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
-                </svg>
+            <div class="nav-btn" data-view="viewExplore">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
             </div>
-            <div class="nav-item" data-view="watchlistView">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-                <span class="nav-badge" id="watchlistBadge" style="display: none;">0</span>
+            <div class="nav-btn" data-view="viewWatchlist">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="nav-badge" id="navBadge" style="display:none;">0</span>
             </div>
-            <div class="nav-item" data-view="profileView">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                </svg>
+            <div class="nav-btn" data-view="viewProfile">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
         </nav>
     </div>
 
-    <!-- Anime Detail Modal -->
-    <div class="modal-overlay" id="animeModal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-header-bg" id="modalHeaderBg"></div>
-                <div class="modal-close" onclick="closeModal()">
+    <!-- Modal -->
+    <div class="modal-backdrop" id="animeModal">
+        <div class="modal-sheet">
+            <div class="modal-cover">
+                <div class="modal-cover-bg" id="modalCoverBg"></div>
+                <div class="modal-close-btn" onclick="closeAnimeModal()">
                     <i class="fas fa-times"></i>
                 </div>
             </div>
-            <div class="modal-content">
+            <div class="modal-body">
                 <h2 class="modal-title" id="modalTitle"></h2>
                 <div class="modal-meta" id="modalMeta"></div>
-                <div class="modal-genres" id="modalGenres"></div>
-                <p class="modal-description" id="modalDescription"></p>
+                <div class="modal-tags" id="modalTags"></div>
+                <p class="modal-desc" id="modalDesc"></p>
                 <div class="modal-actions">
-                    <button class="modal-btn primary" onclick="playAnime()">
-                        <i class="fas fa-play"></i>
-                        Play Now
+                    <button class="modal-btn primary" onclick="handlePlay()">
+                        <i class="fas fa-play"></i> Play Now
                     </button>
-                    <button class="modal-btn secondary" id="modalWatchlistBtn" onclick="toggleWatchlistFromModal()">
-                        <i class="far fa-heart"></i>
-                        Add to List
+                    <button class="modal-btn secondary" id="modalListBtn" onclick="toggleFromModal()">
+                        <i class="far fa-heart"></i> Add to List
                     </button>
                 </div>
-                <div class="episodes-section">
+                <div class="episodes-block">
                     <h3>Episodes</h3>
-                    <div class="episode-list" id="episodeList"></div>
+                    <div class="episode-items" id="episodeItems"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Notification Panel -->
+    <div class="notif-backdrop" id="notifBackdrop" onclick="closeNotifPanel()"></div>
+    <div class="notif-panel" id="notifPanel">
+        <div class="notif-panel-header">
+            <h2>Notifications</h2>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="notif-mark-read" id="markAllRead" onclick="markAllNotifRead()">Mark all read</button>
+                <button class="notif-close" onclick="closeNotifPanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="notif-list" id="notifList"></div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">Added to watchlist</span>
+        <span id="toastMsg">Added to watchlist</span>
     </div>
 
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="brand">TROYWATCH</div>
+                <div class="copyright">&copy; <span id="footerYear"></span> troywatch. All rights reserved.</div>
+            </div>
+            <div class="footer-center">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <span class="sep">&bull;</span>
+                <a href="#" class="footer-link">Terms</a>
+                <span class="sep">&bull;</span>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+            <div class="footer-right">
+                <a href="#" class="social"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social"><i class="fab fa-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Dark mode detection
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-        }
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (event.matches) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+ 
+
+// Dark mode detection
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.classList.add('dark');
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+    document.documentElement.classList.toggle('dark', e.matches);
+});
+
+// Footer year
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+// ===================== STATE =====================
+var state = {
+    watchlist: [],
+    currentAnime: null,
+    genre: 'All',
+    celebrated: false,
+    activeTheme: '#E8B86D',
+    notifRead: {}
+};
+
+// ===================== DATA =====================
+var genres = ['All', 'Action', 'Slice of Life', 'Sci-Fi', 'Fantasy', 'Romance', 'Horror', 'Sports', 'Comedy', 'Drama'];
+
+var categories = [
+    { name: 'Action', icon: 'fa-fist-raised', cls: 'cat-action' },
+    { name: 'Romance', icon: 'fa-heart', cls: 'cat-romance' },
+    { name: 'Comedy', icon: 'fa-laugh-beam', cls: 'cat-comedy' },
+    { name: 'Fantasy', icon: 'fa-hat-wizard', cls: 'cat-fantasy' },
+    { name: 'Sci-Fi', icon: 'fa-robot', cls: 'cat-scifi' },
+    { name: 'Horror', icon: 'fa-ghost', cls: 'cat-horror' },
+    { name: 'Sports', icon: 'fa-futbol', cls: 'cat-sports' },
+    { name: 'Drama', icon: 'fa-theater-masks', cls: 'cat-drama' }
+];
+
+var continueList = [
+    { id: 1, title: "Frieren: Beyond Journey's End", episode: "Episode 24 \u2022 The Height of Magic", progress: 68, grad: "grad-6", currentEp: 24 },
+    { id: 2, title: "Solo Leveling", episode: "Episode 11 \u2022 A Knight Who Defends", progress: 35, grad: "grad-7", currentEp: 11 },
+    { id: 3, title: "Dandadan", episode: "Episode 8 \u2022 Turbo Granny", progress: 82, grad: "grad-2", currentEp: 8 }
+];
+
+var animeData = [
+    { id: 4, title: "Blue Lock", year: "2024", genre: "Sports", genres: ["Sports", "Action"], grad: "grad-3", isNew: true, rating: 8.6, episodes: 24, status: "Airing", description: "After a disastrous defeat at the 2018 World Cup, Japan's team struggles to regroup. But what's missing? An absolute Ace Striker. The Football Association is hell-bent on creating a striker who hungers for goals and thirsts for victory." },
+    { id: 5, title: "Jujutsu Kaisen", year: "2024", genre: "Action", genres: ["Action", "Fantasy"], grad: "grad-7", isNew: false, isTop: true, rating: 9.1, episodes: 48, status: "Complete", description: "Yuji Itadori is an unnaturally fit high school student living in Sendai. On the night his grandfather dies, he meets a sorcerer and becomes host to a powerful Curse after swallowing a cursed object." },
+    { id: 6, title: "Spy x Family", year: "2024", genre: "Comedy", genres: ["Comedy", "Action", "Slice of Life"], grad: "grad-4", isNew: true, rating: 8.8, episodes: 37, status: "Airing", description: "A spy known as Twilight is tasked with building a fake family to execute a mission. He adopts a telepathic orphan and marries an assassin, each unaware of the others' true identities." },
+    { id: 7, title: "Chainsaw Man", year: "2023", genre: "Action", genres: ["Action", "Horror"], grad: "grad-2", isNew: false, rating: 8.7, episodes: 12, status: "Complete", description: "Denji has a simple dream \u2014 to live a happy and peaceful life. But as a devil hunter with a debt to pay off, that's not so easy." },
+    { id: 8, title: "Demon Slayer", year: "2024", genre: "Action", genres: ["Action", "Fantasy"], grad: "grad-5", isNew: false, isTop: true, rating: 9.0, episodes: 55, status: "Airing", description: "Tanjiro sets out on the path of the Demon Slayer to save his sister and avenge his family. With epic battles and emotional storytelling." },
+    { id: 9, title: "Bocchi the Rock!", year: "2023", genre: "Slice of Life", genres: ["Slice of Life", "Comedy"], grad: "grad-8", isNew: false, rating: 8.9, episodes: 12, status: "Complete", description: "Hitori Gotoh is a shy, awkward girl who dreams of being in a band. Her guitar skills are phenomenal, but social skills? Not so much." },
+    { id: 10, title: "Cyberpunk: Edgerunners", year: "2022", genre: "Sci-Fi", genres: ["Sci-Fi", "Action"], grad: "grad-1", isNew: false, isTop: true, rating: 9.2, episodes: 10, status: "Complete", description: "A street kid trying to survive in Night City, a futuristic city obsessed with power, glamour, and body modification." },
+    { id: 11, title: "Mob Psycho 100", year: "2022", genre: "Action", genres: ["Action", "Comedy"], grad: "grad-4", isNew: false, rating: 8.8, episodes: 37, status: "Complete", description: "Shigeo Kageyama, a.k.a. Mob, is a boy who has immense psychic power but just wants to live a normal life." },
+    { id: 12, title: "Vinland Saga", year: "2024", genre: "Drama", genres: ["Drama", "Action"], grad: "grad-5", isNew: true, isTop: true, rating: 9.1, episodes: 48, status: "Airing", description: "Thorfinn pursues a journey with no destination. His name means 'true peace,' and he seeks a land without war, slavery, or discrimination." },
+    { id: 13, title: "Made in Abyss", year: "2022", genre: "Fantasy", genres: ["Fantasy", "Drama"], grad: "grad-6", isNew: false, rating: 8.9, episodes: 25, status: "Complete", description: "The Abyss \u2014 a gaping chasm stretching down into the depths of the earth, filled with mysterious creatures and relics from a time long past." },
+    { id: 14, title: "Attack on Titan", year: "2023", genre: "Action", genres: ["Action", "Drama"], grad: "grad-11", isNew: false, isTop: true, rating: 9.5, episodes: 88, status: "Complete", description: "Humanity lives inside cities surrounded by enormous walls due to the Titans, gigantic humanoid beings who devour humans seemingly without reason." },
+    { id: 15, title: "My Hero Academia", year: "2024", genre: "Action", genres: ["Action", "Comedy"], grad: "grad-10", isNew: true, rating: 8.4, episodes: 138, status: "Airing", description: "In a world where most people have superpowers, a boy without any dreams of becoming the greatest hero of all time." },
+    { id: 16, title: "One Punch Man", year: "2019", genre: "Action", genres: ["Action", "Comedy"], grad: "grad-9", isNew: false, rating: 8.7, episodes: 24, status: "Complete", description: "Saitama is a hero who only became a hero for fun. He can defeat his enemies with a single punch, but being devastatingly powerful is boring." },
+    { id: 17, title: "Tokyo Revengers", year: "2023", genre: "Action", genres: ["Action", "Drama"], grad: "grad-12", isNew: false, rating: 8.2, episodes: 37, status: "Complete", description: "Takemichi Hanagaki learns that his girlfriend from way back in middle school, Hinata Tachibana, has died. He time leaps to change the past." },
+    { id: 18, title: "Oshi no Ko", year: "2024", genre: "Drama", genres: ["Drama", "Romance"], grad: "grad-8", isNew: true, isTop: true, rating: 9.0, episodes: 23, status: "Airing", description: "Dr. Goro is reborn as the child of his favorite idol, Ai Hoshino. As Aquamarine Hoshino, he navigates the dark side of the entertainment industry." }
+];
+
+var scheduleData = [
+    { day: 'Today', isToday: true, items: [
+        { time: '22:00', title: 'Blue Lock', ep: 'Episode 25', grad: 'grad-3' },
+        { time: '23:30', title: 'Spy x Family', ep: 'Episode 38', grad: 'grad-4' }
+    ]},
+    { day: 'Tomorrow', items: [
+        { time: '19:00', title: 'My Hero Academia', ep: 'Episode 139', grad: 'grad-10' },
+        { time: '21:00', title: 'Vinland Saga', ep: 'Episode 49', grad: 'grad-5' }
+    ]},
+    { day: 'Friday', items: [
+        { time: '20:00', title: 'Demon Slayer', ep: 'Episode 56', grad: 'grad-5' },
+        { time: '22:30', title: 'Oshi no Ko', ep: 'Episode 24', grad: 'grad-8' }
+    ]}
+];
+
+// Fansub data
+var fansubData = {
+    name: 'SubsPlease',
+    votes: 2847,
+    tagline: 'Community choice for reliable, fast subs'
+};
+
+// Ranking data
+var rankingData = [
+    { title: 'Solo Leveling', ep: 'Episode 12 this week', grad: 'grad-7', change: 'up', delta: 2 },
+    { title: 'Jujutsu Kaisen', ep: 'Episode 49 this week', grad: 'grad-7', change: 'same', delta: 0 },
+    { title: 'Blue Lock', ep: 'Episode 25 this week', grad: 'grad-3', change: 'up', delta: 3 },
+    { title: 'Demon Slayer', ep: 'Episode 56 this week', grad: 'grad-5', change: 'down', delta: 1 },
+    { title: 'Attack on Titan', ep: 'Recap Special', grad: 'grad-11', change: 'down', delta: 2 },
+    { title: 'Spy x Family', ep: 'Episode 38 this week', grad: 'grad-4', change: 'up', delta: 1 },
+    { title: 'Oshi no Ko', ep: 'Episode 24 this week', grad: 'grad-8', change: 'up', delta: 4 }
+];
+
+// Staff picks data
+var staffPicks = [
+    { id: 10, title: 'Cyberpunk: Edgerunners', grad: 'grad-1', reason: "A visual masterpiece. Studio Trigger's best work in years \u2014 raw, emotional, unforgettable." },
+    { id: 12, title: 'Vinland Saga', grad: 'grad-5', reason: 'Season 2 redefines the meaning of strength. A masterclass in character growth.' },
+    { id: 9, title: 'Bocchi the Rock!', grad: 'grad-8', reason: 'The most relatable protagonist in years. Hilarious, heartfelt, perfectly animated.' },
+    { id: 13, title: 'Made in Abyss', grad: 'grad-6', reason: "Don't let the art style fool you. This is one of the darkest, most gripping adventures." }
+];
+
+// Notifications data
+var notifications = [
+    { id: 'n1', type: 'ep', icon: 'fa-play-circle', title: 'New Episode Available', desc: 'Blue Lock Episode 25 is now streaming.', time: '5m ago', unread: true },
+    { id: 'n2', type: 'ep', icon: 'fa-play-circle', title: 'New Episode Available', desc: 'Spy x Family Episode 38 drops tonight at 23:30.', time: '1h ago', unread: true },
+    { id: 'n3', type: 'rec', icon: 'fa-star', title: 'Recommended for You', desc: 'Based on your taste: try Cyberpunk Edgerunners.', time: '3h ago', unread: true },
+    { id: 'n4', type: 'social', icon: 'fa-users', title: 'Community Update', desc: 'SubsPlease won Fansub of the Month!', time: '6h ago', unread: false },
+    { id: 'n5', type: 'sys', icon: 'fa-cog', title: 'App Update', desc: 'Troywatch v2.1 is here \u2014 new explore page and rankings.', time: '1d ago', unread: false },
+    { id: 'n6', type: 'ep', icon: 'fa-play-circle', title: 'Continuing: Frieren', desc: "You left off at Episode 24. Continue watching?", time: '2d ago', unread: false }
+];
+
+// Theme colors
+var themeColors = [
+    { hex: '#E8B86D', name: 'Gold' },
+    { hex: '#E85D5D', name: 'Coral' },
+    { hex: '#4ADE80', name: 'Emerald' },
+    { hex: '#22D3EE', name: 'Cyan' },
+    { hex: '#A78BFA', name: 'Violet' },
+    { hex: '#F472B6', name: 'Rose' },
+    { hex: '#FB923C', name: 'Tangerine' },
+    { hex: '#60A5FA', name: 'Sky' }
+];
+
+// Masonry items
+var masonryItems = [
+    { id: 14, title: 'Attack on Titan', genre: 'Action', grad: 'grad-11', h: 180 },
+    { id: 9, title: 'Bocchi the Rock!', genre: 'Slice of Life', grad: 'grad-8', h: 140 },
+    { id: 10, title: 'Cyberpunk: Edgerunners', genre: 'Sci-Fi', grad: 'grad-1', h: 200 },
+    { id: 7, title: 'Chainsaw Man', genre: 'Action', grad: 'grad-2', h: 150 },
+    { id: 13, title: 'Made in Abyss', genre: 'Fantasy', grad: 'grad-6', h: 170 },
+    { id: 6, title: 'Spy x Family', genre: 'Comedy', grad: 'grad-4', h: 130 },
+    { id: 18, title: 'Oshi no Ko', genre: 'Drama', grad: 'grad-8', h: 190 },
+    { id: 16, title: 'One Punch Man', genre: 'Action', grad: 'grad-9', h: 145 }
+];
+
+// Milestones
+var milestones = [
+    { num: '1.2M', label: 'Active Users' },
+    { num: '847', label: 'Titles' },
+    { num: '15K', label: 'Episodes' },
+    { num: '320K', label: 'Reviews' }
+];
+
+// ===================== RENDER FUNCTIONS =====================
+
+function renderGenres() {
+    var bar = document.getElementById('genreBar');
+    bar.innerHTML = genres.map(function(g) {
+        return '<button class="genre-chip ' + (g === state.genre ? 'active' : '') + '" onclick="pickGenre(\'' + g + '\')">' + g + '</button>';
+    }).join('');
+}
+
+function renderCategories() {
+    var grid = document.getElementById('catGrid');
+    grid.innerHTML = categories.map(function(c) {
+        return '<div class="cat-card" onclick="pickCategory(\'' + c.name + '\')">' +
+            '<div class="cat-card-bg ' + c.cls + '"></div>' +
+            '<div class="cat-card-inner">' +
+                '<i class="fas ' + c.icon + '"></i>' +
+                '<span>' + c.name + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function renderContinue() {
+    var carousel = document.getElementById('continueCarousel');
+    if (continueList.length === 0) {
+        document.getElementById('continueSection').style.display = 'none';
+        return;
+    }
+    carousel.innerHTML = continueList.map(function(item) {
+        return '<div class="hero-card" onclick="openContinueModal(' + item.id + ')">' +
+            '<div class="hero-card-bg ' + item.grad + '"></div>' +
+            '<div class="hero-play-btn"><i class="fas fa-play"></i></div>' +
+            '<div class="hero-card-body">' +
+                '<h3 class="hero-card-title">' + item.title + '</h3>' +
+                '<p class="hero-card-sub">' + item.episode + '</p>' +
+                '<div class="progress-track">' +
+                    '<div class="progress-bar" style="width:' + item.progress + '%"></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function buildAnimeCard(a) {
+    var badgeHTML = '';
+    if (a.isNew) badgeHTML = '<span class="tile-badge new">New</span>';
+    else if (a.isTop) badgeHTML = '<span class="tile-badge top">Top</span>';
+    else if (a.status === 'Airing') badgeHTML = '<span class="tile-badge airing">Airing</span>';
+
+    var inList = state.watchlist.indexOf(a.id) !== -1;
+    var statusClass = a.status === 'Complete' ? 'complete' : '';
+
+    return '<div class="anime-tile" onclick="openAnimeModal(' + a.id + ')">' +
+        '<div class="anime-tile-img">' +
+            '<div class="anime-tile-bg ' + a.grad + '"></div>' +
+            badgeHTML +
+            '<div class="tile-heart ' + (inList ? 'active' : '') + '" onclick="event.stopPropagation(); toggleWatchlist(' + a.id + ')">' +
+                '<i class="' + (inList ? 'fas' : 'far') + ' fa-heart"></i>' +
+            '</div>' +
+            '<div class="tile-rating">' +
+                '<i class="fas fa-star"></i>' +
+                '<span>' + a.rating + '</span>' +
+            '</div>' +
+            '<span class="tile-ep-count">' + a.episodes + ' ep</span>' +
+        '</div>' +
+        '<h4 class="anime-tile-title">' + a.title + '</h4>' +
+        '<div class="anime-tile-meta">' +
+            '<span>' + a.year + '</span>' +
+            '<span class="dot"></span>' +
+            '<span>' + a.genre + '</span>' +
+        '</div>' +
+        '<span class="anime-tile-status ' + statusClass + '">' + a.status + '</span>' +
+    '</div>';
+}
+
+function renderAnimeRow(containerId, list) {
+    var row = document.getElementById(containerId);
+    row.innerHTML = list.map(function(a) { return buildAnimeCard(a); }).join('');
+}
+
+function renderSchedule() {
+    var list = document.getElementById('scheduleList');
+    list.innerHTML = scheduleData.map(function(d) {
+        return '<div class="schedule-day">' +
+            '<div class="schedule-day-header ' + (d.isToday ? 'today' : '') + '">' +
+                d.day +
+                (d.isToday ? ' <span class="today-badge">Today</span>' : '') +
+            '</div>' +
+            '<div class="schedule-items">' +
+                d.items.map(function(i) {
+                    return '<div class="schedule-entry">' +
+                        '<span class="schedule-time">' + i.time + '</span>' +
+                        '<div class="schedule-thumb">' +
+                            '<div class="schedule-thumb-bg ' + i.grad + '"></div>' +
+                        '</div>' +
+                        '<div class="schedule-info">' +
+                            '<h4 class="schedule-info-title">' + i.title + '</h4>' +
+                            '<p class="schedule-info-ep">' + i.ep + '</p>' +
+                        '</div>' +
+                    '</div>';
+                }).join('') +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function renderWatchlist() {
+    var grid = document.getElementById('watchlistGrid');
+    var empty = document.getElementById('emptyWatchlist');
+    var items = animeData.filter(function(a) { return state.watchlist.indexOf(a.id) !== -1; });
+
+    document.getElementById('watchlistNum').textContent = items.length;
+    document.getElementById('navBadge').textContent = items.length;
+    document.getElementById('navBadge').style.display = items.length > 0 ? 'flex' : 'none';
+
+    if (items.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+    } else {
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+        grid.innerHTML = items.map(function(a) { return buildAnimeCard(a); }).join('');
+    }
+}
+
+// ===== FANSUB OF THE MONTH =====
+function renderFansubBanner() {
+    var banner = document.getElementById('fansubBanner');
+    banner.innerHTML =
+        '<div class="fansub-label"><i class="fas fa-trophy"></i> Fansub of the Month</div>' +
+        '<div class="fansub-body">' +
+            '<div class="fansub-info">' +
+                '<div class="fansub-name">' + fansubData.name + '</div>' +
+                '<div class="fansub-votes"><i class="fas fa-thumbs-up"></i> ' + fansubData.votes.toLocaleString() + ' community votes</div>' +
+            '</div>' +
+            '<button class="fansub-celebrate-btn' + (state.celebrated ? ' celebrated' : '') + '" onclick="celebrateFansub()" id="celebrateBtn">' +
+                (state.celebrated ? '<i class="fas fa-check"></i> Celebrated' : '<i class="fas fa-party-horn"></i> Celebrate') +
+            '</button>' +
+        '</div>';
+}
+
+function celebrateFansub() {
+    if (state.celebrated) return;
+    state.celebrated = true;
+    fansubData.votes++;
+    renderFansubBanner();
+    showToast('You celebrated ' + fansubData.name + '!');
+}
+
+// ===== STAFF PICKS =====
+function renderStaffPicks() {
+    var row = document.getElementById('staffPicksRow');
+    row.innerHTML = staffPicks.map(function(p) {
+        return '<div class="staff-pick-card" onclick="openAnimeModal(' + p.id + ')">' +
+            '<div class="staff-pick-cover">' +
+                '<div class="staff-pick-cover-bg ' + p.grad + '"></div>' +
+            '</div>' +
+            '<div class="staff-pick-body">' +
+                '<div class="staff-pick-title">' + p.title + '</div>' +
+                '<div class="staff-pick-reason">' + p.reason + '</div>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+// ===== MILESTONES =====
+function renderMilestones() {
+    var row = document.getElementById('milestoneRow');
+    row.innerHTML = milestones.map(function(m) {
+        return '<div class="milestone-card">' +
+            '<div class="milestone-num">' + m.num + '</div>' +
+            '<div class="milestone-label">' + m.label + '</div>' +
+        '</div>';
+    }).join('');
+}
+
+// ===== POPULARITY RANKING =====
+function renderRanking() {
+    var list = document.getElementById('rankingList');
+    list.innerHTML = rankingData.map(function(r, i) {
+        var changeIcon = '';
+        if (r.change === 'up') changeIcon = '<div class="ranking-change up"><i class="fas fa-caret-up"></i> ' + r.delta + '</div>';
+        else if (r.change === 'down') changeIcon = '<div class="ranking-change down"><i class="fas fa-caret-down"></i> ' + r.delta + '</div>';
+        else changeIcon = '<div class="ranking-change same"><i class="fas fa-minus"></i></div>';
+
+        return '<div class="ranking-item">' +
+            '<div class="ranking-pos">' + (i + 1) + '</div>' +
+            '<div class="ranking-thumb"><div class="ranking-thumb-bg ' + r.grad + '"></div></div>' +
+            '<div class="ranking-info">' +
+                '<div class="ranking-title">' + r.title + '</div>' +
+                '<div class="ranking-ep">' + r.ep + '</div>' +
+            '</div>' +
+            changeIcon +
+        '</div>';
+    }).join('');
+}
+
+// ===== MASONRY LAYOUT =====
+function renderMasonry() {
+    var section = document.getElementById('masonrySection');
+    section.innerHTML = '<div class="masonry-grid">' +
+        masonryItems.map(function(m) {
+            return '<div class="masonry-item" onclick="openAnimeModal(' + m.id + ')">' +
+                '<div class="masonry-item-bg ' + m.grad + '" style="height:' + m.h + 'px;"></div>' +
+                '<div class="masonry-item-overlay">' +
+                    '<div class="masonry-item-title">' + m.title + '</div>' +
+                    '<div class="masonry-item-meta">' + m.genre + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('') +
+    '</div>';
+}
+
+// ===== NOTIFICATIONS =====
+function getUnreadCount() {
+    return notifications.filter(function(n) { return n.unread && !state.notifRead[n.id]; }).length;
+}
+
+function updateNotifBadge() {
+    var count = getUnreadCount();
+    var btn = document.getElementById('notifBtn');
+    if (count > 0) {
+        btn.classList.add('has-badge');
+    } else {
+        btn.classList.remove('has-badge');
+    }
+}
+
+function renderNotifications() {
+    var list = document.getElementById('notifList');
+    if (notifications.length === 0) {
+        list.innerHTML = '<div class="notif-empty"><i class="far fa-bell-slash"></i><p>No notifications yet</p></div>';
+        return;
+    }
+    list.innerHTML = notifications.map(function(n) {
+        var isUnread = n.unread && !state.notifRead[n.id];
+        return '<div class="notif-item ' + (isUnread ? 'notif-unread' : '') + '" onclick="readNotif(\'' + n.id + '\')">' +
+            '<div class="notif-icon-wrap ' + n.type + '">' +
+                '<i class="fas ' + n.icon + '"></i>' +
+            '</div>' +
+            '<div class="notif-content">' +
+                '<h4>' + n.title + '</h4>' +
+                '<p>' + n.desc + '</p>' +
+            '</div>' +
+            '<span class="notif-time">' + n.time + '</span>' +
+        '</div>';
+    }).join('');
+}
+
+function openNotifPanel() {
+    document.getElementById('notifPanel').classList.add('open');
+    document.getElementById('notifBackdrop').classList.add('open');
+    renderNotifications();
+}
+
+function closeNotifPanel() {
+    document.getElementById('notifPanel').classList.remove('open');
+    document.getElementById('notifBackdrop').classList.remove('open');
+}
+
+function readNotif(id) {
+    state.notifRead[id] = true;
+    updateNotifBadge();
+    renderNotifications();
+}
+
+function markAllNotifRead() {
+    notifications.forEach(function(n) {
+        state.notifRead[n.id] = true;
+    });
+    updateNotifBadge();
+    renderNotifications();
+    showToast('All notifications marked as read');
+}
+
+// ===== THEME COLOR SWITCHER =====
+function renderColorPicker() {
+    var row = document.getElementById('colorPickerRow');
+    row.innerHTML = themeColors.map(function(c) {
+        return '<div class="color-swatch ' + (state.activeTheme === c.hex ? 'active' : '') + '" ' +
+            'style="background:' + c.hex + ';" ' +
+            'onclick="applyThemeColor(\'' + c.hex + '\')" ' +
+            'title="' + c.name + '"></div>';
+    }).join('');
+}
+
+function toggleColorPicker() {
+    var row = document.getElementById('colorPickerRow');
+    var arrow = document.getElementById('themeArrow');
+    if (row.style.display === 'none') {
+        row.style.display = 'flex';
+        arrow.style.transform = 'rotate(90deg)';
+    } else {
+        row.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+document.getElementById('themeColorRow').addEventListener('click', function(e) {
+    if (e.target.classList.contains('color-swatch')) return;
+    toggleColorPicker();
+});
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function applyThemeColor(hex) {
+    state.activeTheme = hex;
+    var rgb = hexToRgb(hex);
+    document.documentElement.style.setProperty('--accent', hex);
+    document.documentElement.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.15)');
+    document.documentElement.style.setProperty('--accent-glow', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.4)');
+    renderColorPicker();
+    showToast('Theme color updated');
+}
+
+// ===================== FILTER LOGIC =====================
+function pickGenre(g) {
+    state.genre = g;
+    renderGenres();
+    applyFilters();
+}
+
+function applyFilters() {
+    var filtered = animeData.slice();
+    if (state.genre !== 'All') {
+        filtered = filtered.filter(function(a) { return a.genres.indexOf(state.genre) !== -1; });
+    }
+
+    var trending = filtered.filter(function(a) { return a.rating >= 8.5; }).slice(0, 6);
+    var topRated = filtered.slice().sort(function(a, b) { return b.rating - a.rating; }).slice(0, 6);
+    var newReleases = filtered.filter(function(a) { return a.isNew; }).slice(0, 6);
+    var forYou = filtered.slice(0, 6);
+
+    renderAnimeRow('trendingRow', trending);
+    renderAnimeRow('topRatedRow', topRated);
+    renderAnimeRow('newReleasesRow', newReleases);
+    renderAnimeRow('forYouRow', forYou);
+}
+
+function pickCategory(cat) {
+    state.genre = cat;
+    goToView('viewHome');
+    setTimeout(function() {
+        renderGenres();
+        applyFilters();
+    }, 100);
+}
+
+// ===================== SEARCH =====================
+var mainSearch = document.getElementById('mainSearch');
+var mainSearchClear = document.getElementById('mainSearchClear');
+var searchPane = document.getElementById('searchResultsPane');
+var homeMain = document.getElementById('homeMainContent');
+
+mainSearch.addEventListener('input', function() {
+    var q = this.value.toLowerCase().trim();
+    mainSearchClear.classList.toggle('visible', q.length > 0);
+
+    if (q.length > 0) {
+        var results = animeData.filter(function(a) {
+            return a.title.toLowerCase().indexOf(q) !== -1 ||
+                a.genre.toLowerCase().indexOf(q) !== -1 ||
+                a.genres.some(function(g) { return g.toLowerCase().indexOf(q) !== -1; });
         });
+        searchPane.classList.add('visible');
+        homeMain.style.display = 'none';
+        renderAnimeRow('searchResultsGrid', results);
+    } else {
+        clearMainSearch();
+    }
+});
 
-        // State
-        let watchlist = [];
-        let currentAnime = null;
-        let currentGenre = 'All';
+mainSearchClear.addEventListener('click', clearMainSearch);
 
-        // Data
-        const genres = ['All', 'Action', 'Slice of Life', 'Sci-Fi', 'Fantasy', 'Romance', 'Horror', 'Sports', 'Comedy', 'Drama'];
+function clearMainSearch() {
+    mainSearch.value = '';
+    mainSearchClear.classList.remove('visible');
+    searchPane.classList.remove('visible');
+    homeMain.style.display = 'block';
+}
 
-        const categories = [
-            { name: 'Action', icon: 'fa-fist-raised', class: 'cat-action' },
-            { name: 'Romance', icon: 'fa-heart', class: 'cat-romance' },
-            { name: 'Comedy', icon: 'fa-laugh-beam', class: 'cat-comedy' },
-            { name: 'Fantasy', icon: 'fa-hat-wizard', class: 'cat-fantasy' },
-            { name: 'Sci-Fi', icon: 'fa-robot', class: 'cat-scifi' },
-            { name: 'Horror', icon: 'fa-ghost', class: 'cat-horror' },
-            { name: 'Sports', icon: 'fa-futbol', class: 'cat-sports' },
-            { name: 'Drama', icon: 'fa-theater-masks', class: 'cat-drama' }
-        ];
+// ===================== NAVIGATION =====================
+function goToView(viewId) {
+    document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+    document.getElementById(viewId).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.view === viewId);
+    });
+    if (viewId === 'viewWatchlist') renderWatchlist();
+}
 
-        const continueWatching = [
-            { id: 1, title: "Frieren: Beyond Journey's End", episode: "Episode 24 • The Height of Magic", progress: 68, art: "art-6", currentEp: 24 },
-            { id: 2, title: "Solo Leveling", episode: "Episode 11 • A Knight Who Defends", progress: 35, art: "art-7", currentEp: 11 },
-            { id: 3, title: "Dandadan", episode: "Episode 8 • Turbo Granny", progress: 82, art: "art-2", currentEp: 8 }
-        ];
+document.querySelectorAll('.nav-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { goToView(btn.dataset.view); });
+});
 
-        const allAnime = [
-            { id: 4, title: "Blue Lock", year: "2024", genre: "Sports", genres: ["Sports", "Action"], art: "art-3", isNew: true, rating: 8.6, episodes: 24, status: "Airing", description: "After a disastrous defeat at the 2018 World Cup, Japan's team struggles to regroup. But what's missing? An absolute Ace Striker. The Football Association is hell-bent on creating a striker who hungers for goals and thirsts for victory." },
-            { id: 5, title: "Jujutsu Kaisen", year: "2024", genre: "Action", genres: ["Action", "Fantasy"], art: "art-7", isNew: false, isTop: true, rating: 9.1, episodes: 48, status: "Complete", description: "Yuji Itadori is an unnaturally fit high school student living in Sendai. On the night his grandfather dies, he meets a sorcerer and becomes host to a powerful Curse after swallowing a cursed object." },
-            { id: 6, title: "Spy x Family", year: "2024", genre: "Comedy", genres: ["Comedy", "Action", "Slice of Life"], art: "art-4", isNew: true, rating: 8.8, episodes: 37, status: "Airing", description: "A spy known as Twilight is tasked with building a fake family to execute a mission. He adopts a telepathic orphan and marries an assassin, each unaware of the others' true identities." },
-            { id: 7, title: "Chainsaw Man", year: "2023", genre: "Action", genres: ["Action", "Horror"], art: "art-2", isNew: false, rating: 8.7, episodes: 12, status: "Complete", description: "Denji has a simple dream — to live a happy and peaceful life. But as a devil hunter with a debt to pay off, that's not so easy." },
-            { id: 8, title: "Demon Slayer", year: "2024", genre: "Action", genres: ["Action", "Fantasy"], art: "art-5", isNew: false, isTop: true, rating: 9.0, episodes: 55, status: "Airing", description: "Tanjiro sets out on the path of the Demon Slayer to save his sister and avenge his family. With epic battles and emotional storytelling." },
-            { id: 9, title: "Bocchi the Rock!", year: "2023", genre: "Slice of Life", genres: ["Slice of Life", "Comedy"], art: "art-8", isNew: false, rating: 8.9, episodes: 12, status: "Complete", description: "Hitori Gotoh is a shy, awkward girl who dreams of being in a band. Her guitar skills are phenomenal, but social skills? Not so much." },
-            { id: 10, title: "Cyberpunk: Edgerunners", year: "2022", genre: "Sci-Fi", genres: ["Sci-Fi", "Action"], art: "art-1", isNew: false, isTop: true, rating: 9.2, episodes: 10, status: "Complete", description: "A street kid trying to survive in Night City, a futuristic city obsessed with power, glamour, and body modification." },
-            { id: 11, title: "Mob Psycho 100", year: "2022", genre: "Action", genres: ["Action", "Comedy"], art: "art-4", isNew: false, rating: 8.8, episodes: 37, status: "Complete", description: "Shigeo Kageyama, a.k.a. Mob, is a boy who has immense psychic power but just wants to live a normal life." },
-            { id: 12, title: "Vinland Saga", year: "2024", genre: "Drama", genres: ["Drama", "Action"], art: "art-5", isNew: true, isTop: true, rating: 9.1, episodes: 48, status: "Airing", description: "Thorfinn pursues a journey with no destination. His name means 'true peace,' and he seeks a land without war, slavery, or discrimination." },
-            { id: 13, title: "Made in Abyss", year: "2022", genre: "Fantasy", genres: ["Fantasy", "Drama"], art: "art-6", isNew: false, rating: 8.9, episodes: 25, status: "Complete", description: "The Abyss — a gaping chasm stretching down into the depths of the earth, filled with mysterious creatures and relics from a time long past." },
-            { id: 14, title: "Attack on Titan", year: "2023", genre: "Action", genres: ["Action", "Drama"], art: "art-11", isNew: false, isTop: true, rating: 9.5, episodes: 88, status: "Complete", description: "Humanity lives inside cities surrounded by enormous walls due to the Titans, gigantic humanoid beings who devour humans seemingly without reason." },
-            { id: 15, title: "My Hero Academia", year: "2024", genre: "Action", genres: ["Action", "Comedy"], art: "art-10", isNew: true, rating: 8.4, episodes: 138, status: "Airing", description: "In a world where most people have superpowers, a boy without any dreams of becoming the greatest hero of all time." },
-            { id: 16, title: "One Punch Man", year: "2019", genre: "Action", genres: ["Action", "Comedy"], art: "art-9", isNew: false, rating: 8.7, episodes: 24, status: "Complete", description: "Saitama is a hero who only became a hero for fun. He can defeat his enemies with a single punch, but being devastatingly powerful is boring." },
-            { id: 17, title: "Tokyo Revengers", year: "2023", genre: "Action", genres: ["Action", "Drama"], art: "art-12", isNew: false, rating: 8.2, episodes: 37, status: "Complete", description: "Takemichi Hanagaki learns that his girlfriend from way back in middle school, Hinata Tachibana, has died. He time leaps to change the past." },
-            { id: 18, title: "Oshi no Ko", year: "2024", genre: "Drama", genres: ["Drama", "Romance"], art: "art-8", isNew: true, isTop: true, rating: 9.0, episodes: 23, status: "Airing", description: "Dr. Goro is reborn as the child of his favorite idol, Ai Hoshino. As Aquamarine Hoshino, he navigates the dark side of the entertainment industry." }
-        ];
+// ===================== MODAL =====================
+function openAnimeModal(id) {
+    var anime = animeData.find(function(a) { return a.id === id; });
+    if (!anime) return;
+    state.currentAnime = anime;
 
-        const schedule = [
-            { day: 'Today', isToday: true, items: [
-                { time: '22:00', title: 'Blue Lock', ep: 'Episode 25', art: 'art-3' },
-                { time: '23:30', title: 'Spy x Family', ep: 'Episode 38', art: 'art-4' }
-            ]},
-            { day: 'Tomorrow', items: [
-                { time: '19:00', title: 'My Hero Academia', ep: 'Episode 139', art: 'art-10' },
-                { time: '21:00', title: 'Vinland Saga', ep: 'Episode 49', art: 'art-5' }
-            ]},
-            { day: 'Friday', items: [
-                { time: '20:00', title: 'Demon Slayer', ep: 'Episode 56', art: 'art-5' },
-                { time: '22:30', title: 'Oshi no Ko', ep: 'Episode 24', art: 'art-8' }
-            ]}
-        ];
+    document.getElementById('modalCoverBg').className = 'modal-cover-bg ' + anime.grad;
+    document.getElementById('modalTitle').textContent = anime.title;
+    document.getElementById('modalMeta').innerHTML =
+        '<div class="modal-rating-badge"><i class="fas fa-star"></i><span>' + anime.rating + '</span></div>' +
+        '<span class="modal-info">' + anime.year + '</span>' +
+        '<span class="modal-info">' + anime.episodes + ' Eps</span>' +
+        '<span class="modal-info">' + anime.status + '</span>';
+    document.getElementById('modalTags').innerHTML = anime.genres.map(function(g) {
+        return '<span class="modal-tag">' + g + '</span>';
+    }).join('');
+    document.getElementById('modalDesc').textContent = anime.description;
 
-        // Render Functions
-        function renderGenres() {
-            const container = document.getElementById('genreScroll');
-            container.innerHTML = genres.map(genre => `
-                <button class="genre-pill ${genre === currentGenre ? 'active' : ''}" onclick="selectGenre('${genre}')">${genre}</button>
-            `).join('');
-        }
+    updateModalBtn();
+    renderEpisodes(anime);
+    document.getElementById('animeModal').classList.add('open');
+}
 
-        function renderCategories() {
-            const container = document.getElementById('categoryGrid');
-            container.innerHTML = categories.map(cat => `
-                <div class="category-card" onclick="filterByCategory('${cat.name}')">
-                    <div class="category-card-bg ${cat.class}"></div>
-                    <div class="category-card-content">
-                        <i class="fas ${cat.icon}"></i>
-                        <span>${cat.name}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+function openContinueModal(id) {
+    var cont = continueList.find(function(c) { return c.id === id; });
+    if (!cont) return;
+    var anime = animeData.find(function(a) { return a.title === cont.title; }) || {
+        id: id,
+        title: cont.title,
+        grad: cont.grad,
+        rating: 9.0,
+        year: '2024',
+        episodes: 24,
+        status: 'Airing',
+        genres: ['Action', 'Fantasy'],
+        description: 'Continue watching from where you left off.'
+    };
+    state.currentAnime = anime;
+    document.getElementById('modalCoverBg').className = 'modal-cover-bg ' + anime.grad;
+    document.getElementById('modalTitle').textContent = anime.title;
+    document.getElementById('modalMeta').innerHTML =
+        '<div class="modal-rating-badge"><i class="fas fa-star"></i><span>' + anime.rating + '</span></div>' +
+        '<span class="modal-info">' + anime.year + '</span>' +
+        '<span class="modal-info">' + anime.episodes + ' Eps</span>' +
+        '<span class="modal-info">' + anime.status + '</span>';
+    document.getElementById('modalTags').innerHTML = anime.genres.map(function(g) {
+        return '<span class="modal-tag">' + g + '</span>';
+    }).join('');
+    document.getElementById('modalDesc').textContent = anime.description;
+    updateModalBtn();
+    renderEpisodes(anime);
+    document.getElementById('animeModal').classList.add('open');
+}
 
-        function renderContinueWatching() {
-            const container = document.getElementById('continueCarousel');
-            if (continueWatching.length === 0) {
-                document.getElementById('continueSection').style.display = 'none';
-                return;
-            }
-            container.innerHTML = continueWatching.map(item => `
-                <div class="continue-card" onclick="openAnimeFromContinue(${item.id})">
-                    <div class="continue-card-bg ${item.art}"></div>
-                    <div class="play-overlay">
-                        <div class="play-btn"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="continue-card-content">
-                        <h3 class="continue-card-title">${item.title}</h3>
-                        <p class="continue-card-ep">${item.episode}</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${item.progress}%"></div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+function renderEpisodes(anime) {
+    var container = document.getElementById('episodeItems');
+    var eps = [];
+    var count = Math.min(anime.episodes, 12);
+    for (var i = 1; i <= count; i++) {
+        eps.push({ number: i, title: 'Episode ' + i, duration: (Math.floor(Math.random() * 4) + 22) + 'm' });
+    }
+    container.innerHTML = eps.map(function(ep) {
+        return '<div class="episode-row">' +
+            '<div class="episode-thumb">' +
+                '<div class="episode-thumb-bg ' + anime.grad + '"></div>' +
+                '<i class="fas fa-play"></i>' +
+            '</div>' +
+            '<div class="episode-info">' +
+                '<span class="episode-num">Episode ' + ep.number + '</span>' +
+                '<h4 class="episode-name">' + ep.title + '</h4>' +
+                '<span class="episode-dur">' + ep.duration + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
 
-        function renderAnimeGrid(containerId, data, showTags = true) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = data.map(item => `
-                <div class="anime-card" onclick="openAnimeModal(${item.id})">
-                    <div class="anime-card-image">
-                        <div class="anime-card-bg ${item.art}"></div>
-                        ${showTags && item.isNew ? '<span class="tag new-tag">New</span>' : ''}
-                        ${showTags && item.isTop ? '<span class="tag top-tag">Top</span>' : ''}
-                        ${showTags && item.status === 'Airing' && !item.isNew ? '<span class="tag airing-tag">Airing</span>' : ''}
-                        <div class="watchlist-btn ${watchlist.includes(item.id) ? 'added' : ''}" onclick="event.stopPropagation(); toggleWatchlist(${item.id})">
-                            <i class="${watchlist.includes(item.id) ? 'fas' : 'far'} fa-heart"></i>
-                        </div>
-                        <div class="rating-badge">
-                            <i class="fas fa-star"></i>
-                            <span>${item.rating}</span>
-                        </div>
-                    </div>
-                    <h4 class="anime-card-title">${item.title}</h4>
-                    <div class="anime-card-meta">
-                        <span>${item.year}</span>
-                        <span class="meta-dot"></span>
-                        <span>${item.genre}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+function closeAnimeModal() {
+    document.getElementById('animeModal').classList.remove('open');
+    state.currentAnime = null;
+}
 
-        function renderSchedule() {
-            const container = document.getElementById('scheduleGrid');
-            container.innerHTML = schedule.map(day => `
-                <div class="schedule-day">
-                    <div class="schedule-day-title ${day.isToday ? 'today' : ''}">
-                        ${day.day}
-                        ${day.isToday ? '<span class="day-badge">Today</span>' : ''}
-                    </div>
-                    <div class="schedule-items">
-                        ${day.items.map(item => `
-                            <div class="schedule-item">
-                                <span class="schedule-time">${item.time}</span>
-                                <div class="schedule-thumb">
-                                    <div class="schedule-thumb-bg ${item.art}"></div>
-                                </div>
-                                <div class="schedule-info">
-                                    <h4 class="schedule-title">${item.title}</h4>
-                                    <p class="schedule-ep">${item.ep}</p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
+function handlePlay() {
+    if (state.currentAnime) {
+        showToast('Playing ' + state.currentAnime.title);
+    }
+    closeAnimeModal();
+}
 
-        function renderWatchlist() {
-            const container = document.getElementById('watchlistGrid');
-            const emptyState = document.getElementById('emptyWatchlist');
-            const watchlistItems = allAnime.filter(a => watchlist.includes(a.id));
+document.getElementById('animeModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAnimeModal();
+});
 
-            document.getElementById('watchlistCount').textContent = watchlistItems.length;
-            document.getElementById('watchlistBadge').textContent = watchlistItems.length;
-            document.getElementById('watchlistBadge').style.display = watchlistItems.length > 0 ? 'flex' : 'none';
+// ===================== WATCHLIST =====================
+function toggleWatchlist(id) {
+    var idx = state.watchlist.indexOf(id);
+    if (idx !== -1) {
+        state.watchlist.splice(idx, 1);
+        showToast('Removed from watchlist');
+    } else {
+        state.watchlist.push(id);
+        showToast('Added to watchlist');
+    }
+    applyFilters();
+    renderWatchlist();
+}
 
-            if (watchlistItems.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-            } else {
-                container.style.display = 'grid';
-                emptyState.style.display = 'none';
-                renderAnimeGrid('watchlistGrid', watchlistItems, false);
-            }
-        }
+function toggleFromModal() {
+    if (!state.currentAnime) return;
+    toggleWatchlist(state.currentAnime.id);
+    updateModalBtn();
+}
 
-        // Filter Functions
-        function selectGenre(genre) {
-            currentGenre = genre;
-            renderGenres();
-            filterContent();
-        }
+function updateModalBtn() {
+    if (!state.currentAnime) return;
+    var btn = document.getElementById('modalListBtn');
+    var inList = state.watchlist.indexOf(state.currentAnime.id) !== -1;
+    btn.classList.toggle('added', inList);
+    btn.innerHTML = inList ? '<i class="fas fa-heart"></i> In Watchlist' : '<i class="far fa-heart"></i> Add to List';
+}
 
-        function filterContent() {
-            let filtered = [...allAnime];
-            if (currentGenre !== 'All') {
-                filtered = filtered.filter(a => a.genres.includes(currentGenre));
-            }
+// ===================== TOAST =====================
+var toastTimer = null;
+function showToast(msg) {
+    var toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 2500);
+}
 
-            const trending = filtered.filter(a => a.rating >= 8.5).slice(0, 6);
-            const topRated = [...filtered].sort((a, b) => b.rating - a.rating).slice(0, 6);
-            const newReleases = filtered.filter(a => a.isNew).slice(0, 6);
-            const forYou = filtered.slice(0, 6);
+// ===================== GREETING =====================
+function updateGreeting() {
+    var h = new Date().getHours();
+    var greet = 'Good Evening';
+    if (h < 12) greet = 'Good Morning';
+    else if (h < 17) greet = 'Good Afternoon';
+    document.querySelector('.header-greeting').textContent = greet;
+}
 
-            renderAnimeGrid('trendingGrid', trending);
-            renderAnimeGrid('topRatedGrid', topRated);
-            renderAnimeGrid('newReleasesGrid', newReleases);
-            renderAnimeGrid('forYouGrid', forYou);
-        }
+// ===================== INIT =====================
+function init() {
+    updateGreeting();
+    renderGenres();
+    renderCategories();
+    renderSchedule();
+    renderFansubBanner();
+    renderStaffPicks();
+    renderMilestones();
+    renderRanking();
+    renderMasonry();
+    renderColorPicker();
+    updateNotifBadge();
 
-        function filterByCategory(category) {
-            currentGenre = category;
-            switchView('homeView');
-            setTimeout(() => {
-                renderGenres();
-                filterContent();
-            }, 100);
-        }
+    setTimeout(function() {
+        renderContinue();
+        applyFilters();
+    }, 200);
+}
 
-        // Search Functions
-        const searchInput = document.getElementById('searchInput');
-        const searchClear = document.getElementById('searchClear');
-        const searchResults = document.getElementById('searchResults');
-        const homeContent = document.getElementById('homeContent');
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            searchClear.classList.toggle('visible', query.length > 0);
-
-            if (query.length > 0) {
-                const results = allAnime.filter(a =>
-                    a.title.toLowerCase().includes(query) ||
-                    a.genre.toLowerCase().includes(query) ||
-                    a.genres.some(g => g.toLowerCase().includes(query))
-                );
-
-                searchResults.classList.add('visible');
-                homeContent.style.display = 'none';
-                renderAnimeGrid('searchResultsGrid', results);
-            } else {
-                clearSearch();
-            }
-        });
-
-        searchClear.addEventListener('click', clearSearch);
-
-        function clearSearch() {
-            searchInput.value = '';
-            searchClear.classList.remove('visible');
-            searchResults.classList.remove('visible');
-            homeContent.style.display = 'block';
-        }
-
-        // Navigation
-        function switchView(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.view === viewId);
-            });
-
-            if (viewId === 'watchlistView') {
-                renderWatchlist();
-            }
-        }
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                switchView(this.dataset.view);
-            });
-        });
-
-        // Modal Functions
-        function openAnimeModal(id) {
-            const anime = allAnime.find(a => a.id === id);
-            if (!anime) return;
-
-            currentAnime = anime;
-
-            document.getElementById('modalHeaderBg').className = `modal-header-bg ${anime.art}`;
-            document.getElementById('modalTitle').textContent = anime.title;
-
-            document.getElementById('modalMeta').innerHTML = `
-                <div class="modal-rating"><i class="fas fa-star"></i><span>${anime.rating}</span></div>
-                <span class="modal-info-tag">${anime.year}</span>
-                <span class="modal-info-tag">${anime.episodes} Episodes</span>
-                <span class="modal-info-tag">${anime.status}</span>
-            `;
-
-            document.getElementById('modalGenres').innerHTML = anime.genres.map(g => `<span class="modal-genre">${g}</span>`).join('');
-            document.getElementById('modalDescription').textContent = anime.description;
-
-            updateModalWatchlistBtn();
-            renderEpisodes(anime);
-
-            document.getElementById('animeModal').classList.add('visible');
-        }
-
-        function openAnimeFromContinue(id) {
-            const continueItem = continueWatching.find(c => c.id === id);
-            if (continueItem) {
-                // For continue watching, find matching anime or create mock data
-                const anime = allAnime.find(a => a.title === continueItem.title) || {
-                    id: id,
-                    title: continueItem.title,
-                    art: continueItem.art,
-                    rating: 9.0,
-                    year: '2024',
-                    episodes: 24,
-                    status: 'Airing',
-                    genres: ['Action', 'Fantasy'],
-                    description: 'Continue watching from where you left off.'
-                };
-                currentAnime = anime;
-                document.getElementById('modalHeaderBg').className = `modal-header-bg ${anime.art}`;
-                document.getElementById('modalTitle').textContent = anime.title;
-                document.getElementById('modalMeta').innerHTML = `
-                    <div class="modal-rating"><i class="fas fa-star"></i><span>${anime.rating}</span></div>
-                    <span class="modal-info-tag">${anime.year}</span>
-                    <span class="modal-info-tag">${anime.episodes} Episodes</span>
-                    <span class="modal-info-tag">${anime.status}</span>
-                `;
-                document.getElementById('modalGenres').innerHTML = anime.genres.map(g => `<span class="modal-genre">${g}</span>`).join('');
-                document.getElementById('modalDescription').textContent = anime.description;
-                updateModalWatchlistBtn();
-                renderEpisodes(anime);
-                document.getElementById('animeModal').classList.add('visible');
-            }
-        }
-
-        function renderEpisodes(anime) {
-            const container = document.getElementById('episodeList');
-            const episodes = [];
-            for (let i = 1; i <= Math.min(anime.episodes, 12); i++) {
-                episodes.push({
-                    number: i,
-                    title: `Episode ${i}`,
-                    duration: `${Math.floor(Math.random() * 4) + 22}m`
-                });
-            }
-
-            container.innerHTML = episodes.map(ep => `
-                <div class="episode-item">
-                    <div class="episode-thumb">
-                        <div class="episode-thumb-bg ${anime.art}"></div>
-                        <i class="fas fa-play"></i>
-                    </div>
-                    <div class="episode-info">
-                        <span class="episode-number">Episode ${ep.number}</span>
-                        <h4 class="episode-title">${ep.title}</h4>
-                        <span class="episode-duration">${ep.duration}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function closeModal() {
-            document.getElementById('animeModal').classList.remove('visible');
-            currentAnime = null;
-        }
-
-        function playAnime() {
-            showToast('Playing ' + currentAnime.title);
-            closeModal();
-        }
-
-        // Watchlist Functions
-        function toggleWatchlist(id) {
-            if (watchlist.includes(id)) {
-                watchlist = watchlist.filter(w => w !== id);
-                showToast('Removed from watchlist');
-            } else {
-                watchlist.push(id);
-                showToast('Added to watchlist');
-            }
-            filterContent();
-            renderWatchlist();
-        }
-
-        function toggleWatchlistFromModal() {
-            if (!currentAnime) return;
-            toggleWatchlist(currentAnime.id);
-            updateModalWatchlistBtn();
-        }
-
-        function updateModalWatchlistBtn() {
-            if (!currentAnime) return;
-            const btn = document.getElementById('modalWatchlistBtn');
-            const isInList = watchlist.includes(currentAnime.id);
-            btn.classList.toggle('added', isInList);
-            btn.innerHTML = isInList ?
-                '<i class="fas fa-heart"></i> In Watchlist' :
-                '<i class="far fa-heart"></i> Add to List';
-        }
-
-        // Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.classList.add('visible');
-            setTimeout(() => toast.classList.remove('visible'), 2500);
-        }
-
-        // Close modal on overlay click
-        document.getElementById('animeModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-
-        // Initialize
-        function init() {
-            renderGenres();
-            renderCategories();
-            renderSchedule();
-
-            setTimeout(() => {
-                renderContinueWatching();
-                filterContent();
-            }, 300);
-        }
-
-        init();
+init();
     </script>
 </body>
 </html>
